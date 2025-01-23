@@ -1,4 +1,5 @@
 @extends('layouts.head')
+@include('layouts.header')
 
 @section('content')
 <div class="container mx-auto">
@@ -11,3 +12,5 @@
     </div>
 </div>
 @endsection
+
+@include('layouts.footer')

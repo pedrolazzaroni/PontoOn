@@ -64,7 +64,7 @@
                 setTimeout(() => {
                     notification.remove();
                 }, 500);
-            }, 2100); // 100ms para mostrar + 2000ms visível
+            }, 3100); // 100ms para mostrar + 2000ms visível
         }
     });
 

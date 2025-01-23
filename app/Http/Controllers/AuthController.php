@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function showLoginForm()
+    public function showAuthForm()
     {
-        return view('auth.login');
+        return view('auth.auth'); // Retorna a nova view consolidada
     }
 
     public function login(Request $request)
@@ -22,20 +22,13 @@ class AuthController extends Controller
             return redirect('/')->with('success', 'Login realizado com sucesso!');
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        return redirect('auth')->with('error', 'As credenciais fornecidas não correspondem aos nossos registros.');
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
-        return redirect('/');
-    }
-
-    public function showRegistrationForm()
-    {
-        return view('auth.register');
+        return redirect('auth');
     }
 
     public function register(Request $request)
@@ -53,7 +46,7 @@ class AuthController extends Controller
         ]);
 
         if($user) {
-            return redirect()->route('login')
+            return redirect()->route('auth')
                            ->with('success', 'Cadastro realizado com sucesso! Por favor, faça login.');
         }
 

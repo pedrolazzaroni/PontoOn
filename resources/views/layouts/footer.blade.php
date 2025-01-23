@@ -3,3 +3,6 @@
         &copy; {{ date('Y') }} {{ config('app.name', 'Laravel') }}. Todos os direitos reservados.
     </div>
 </footer>
+    <script src="{{ mix('js/app.js') }}" defer></script>
+</body>
+</html>
