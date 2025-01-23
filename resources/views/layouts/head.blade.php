@@ -10,15 +10,12 @@
     @vite('resources/css/app.css')
 </head>
 <body class="bg-gray-100">
+    @include('components.notification')
     <div id="app">
-        <!-- Header -->
-        @include('layouts.header')
         <!-- Main Content -->
-        <main class="py-4">
+        <main>
             @yield('content')
         </main>
-        <!-- Footer -->
-        @include('layouts.footer')
     </div>
     <script src="{{ mix('js/app.js') }}" defer></script>
 </body>

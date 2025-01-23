@@ -19,7 +19,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials, $request->remember)) {
-            return redirect()->intended('/');
+            return redirect('/')->with('success', 'Login realizado com sucesso!');
         }
 
         return back()->withErrors([
@@ -52,8 +52,11 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        Auth::login($user);
+        if($user) {
+            return redirect()->route('login')
+                           ->with('success', 'Cadastro realizado com sucesso! Por favor, faça login.');
+        }
 
-        return redirect('/');
+        return back()->with('error', 'Erro ao realizar o cadastro. Tente novamente.');
     }
 }
