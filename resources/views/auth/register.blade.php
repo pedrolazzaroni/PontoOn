@@ -4,7 +4,7 @@
 <style>
     .input-focus-effect {
         @apply border-2 border-gray-500 bg-white shadow;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease, outline-color 0.3s ease;
     }
     .input-focus-effect:hover {
         @apply border-gray-600;
@@ -18,7 +18,7 @@
 
 <div class="min-h-screen flex">
     <!-- Lado Esquerdo - Formulário -->
-    <div class="w-1/2 bg-white flex items-center justify-center p-16">
+    <div class="w-1/2 bg-white flex items-center justify-center p-4">
         <div class="w-full max-w-md">
             <div class="mb-8">
                 <h2 class="text-3xl font-bold text-orange-400">Criar Conta</h2>
