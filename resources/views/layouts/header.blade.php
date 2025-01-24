@@ -10,6 +10,12 @@
                 <a href="{{ route('auth') }}" class="text-white hover:bg-indigo-500 px-2 py-1 rounded transition duration-300">Registrar</a>
             @else
                 <span class="text-white mr-4">{{ Auth::user()->name }}</span>
+                @if(Auth::user()->is_admin)
+                    <a href="{{ route('historico.index') }}"
+                       class="text-gray-600 hover:text-orange-500 px-3 py-2 rounded-md text-sm font-medium">
+                        Histórico de Pontos
+                    </a>
+                @endif
                 <a href="{{ route('logout') }}" class="text-white hover:bg-indigo-500 px-2 py-1 rounded transition duration-300"
                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     Sair
