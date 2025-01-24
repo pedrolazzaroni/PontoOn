@@ -49,7 +49,7 @@
         <div class="w-full max-w-md form-wrapper">
             <!-- Formulário de Login -->
             <div id="login-form" class="form-container active">
-                <img src="{{ asset('assets/images/pontoon.png') }}" alt="Ponto On Logo" class="mb-4">
+
                 <div class="mb-8">
                     <h2 class="text-3xl font-bold text-orange-400">Bem-vindo de volta!</h2>
                     <p class="text-gray-600 mt-2">Por favor, faça login na sua conta.</p>
@@ -89,7 +89,7 @@
 
             <!-- Formulário de Registro -->
             <div id="register-form" class="form-container">
-                <img src="{{ asset('assets/images/pontoon.png') }}" alt="Ponto On Logo" class="mb-4">
+                
                 <div class="mb-8">
                     <h2 class="text-3xl font-bold text-orange-400">Criar Conta</h2>
                     <p class="text-gray-600 mt-2">Preencha os dados para se registrar.</p>

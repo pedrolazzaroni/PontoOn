@@ -10,6 +10,7 @@ class Ponto extends Model
     use HasFactory;
 
     protected $fillable = ['user_id', 'entrada', 'saida'];
+    protected $dates = ['entrada', 'saida'];
 
     public function user()
     {

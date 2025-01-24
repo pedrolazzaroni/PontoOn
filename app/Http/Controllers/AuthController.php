@@ -9,47 +9,54 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    // Remove the constructor with middleware
+
     public function showAuthForm()
     {
-        return view('auth.auth'); // Retorna a nova view consolidada
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.auth');
     }
 
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-        if (Auth::attempt($credentials, $request->remember)) {
-            return redirect('/')->with('success', 'Login realizado com sucesso!');
+        if (Auth::attempt($credentials)) {
+            return redirect()->intended('dashboard')->with('success', 'Login realizado com sucesso!');
         }
 
-        return redirect('auth')->with('error', 'As credenciais fornecidas não correspondem aos nossos registros.');
+        return back()->withErrors([
+            'email' => 'As credenciais fornecidas não correspondem aos nossos registros.',
+        ]);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         Auth::logout();
-        return redirect('auth');
+        return redirect()->route('auth')
+                        ->with('success', 'Você foi desconectado com sucesso.');
     }
 
     public function register(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
-        if($user) {
-            return redirect()->route('auth')
-                           ->with('success', 'Cadastro realizado com sucesso! Por favor, faça login.');
-        }
-
-        return back()->with('error', 'Erro ao realizar o cadastro. Tente novamente.');
+        return redirect()->route('auth')
+                        ->with('success', 'Cadastro realizado com sucesso! Por favor, faça login.');
     }
 }

@@ -11,12 +11,10 @@
 </head>
 <body class="bg-gray-100">
     @include('components.notification')
-    <div id="app">
-        <!-- Main Content -->
-        <main>
-            @yield('content')
-        </main>
-    </div>
-    <script src="{{ mix('js/app.js') }}" defer></script>
+
+    @yield('content')
+
+
 </body>
 </html>
+

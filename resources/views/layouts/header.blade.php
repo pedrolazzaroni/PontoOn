@@ -1,4 +1,4 @@
-<nav class="bg-orange-400 p-4 shadow transition duration-500 ease-in-out transform hover:bg-indigo-500">
+<nav class="bg-orange-400 p-4 shadow ">
     <div class="container mx-auto flex justify-between items-center">
         <a href="{{ url('/') }}" class="text-white text-lg font-semibold">
             {{ config('app.name', 'Laravel') }}
