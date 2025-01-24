@@ -40,20 +40,55 @@
                 <form id="ponto-form" method="POST" class="w-full max-w-md">
                     @csrf
                     <button type="submit" id="ponto-btn"
-                        class="w-full py-4 px-6 bg-orange-400 text-white text-lg font-semibold rounded-lg 
-                               hover:bg-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-200 
+                        class="w-full py-4 px-6 bg-orange-400 text-white text-lg font-semibold rounded-lg
+                               hover:bg-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-200
                                transition-all duration-300 transform hover:scale-105 shadow-lg">
                         Marcar Ponto
                     </button>
                 </form>
             </div>
 
+            <!-- Modal de Confirmação -->
+            <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden opacity-0 transition-opacity duration-300">
+                <div class="flex items-center justify-center min-h-screen px-4">
+                    <div class="bg-white rounded-lg shadow-xl max-w-md w-full transform scale-95 opacity-0 transition-all duration-300"
+                         id="modalContent">
+                        <div class="p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Confirmar Registro de Ponto</h3>
+                            <form id="confirmForm" class="space-y-4">
+                                @csrf
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" name="email" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                                    <input type="password" name="password" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
+                            <button id="cancelBtn"
+                                class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                                Cancelar
+                            </button>
+                            <button id="confirmBtn"
+                                class="px-4 py-2 bg-orange-400 text-white rounded-md hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all duration-200">
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Status Badge -->
             <div class="flex flex-col items-center space-y-4">
-                <span id="status-badge" 
+                <span id="status-badge"
                     class="px-6 py-3 rounded-full text-lg font-semibold inline-flex items-center space-x-2">
-                    <span class="w-3 h-3 rounded-full"></span>
-                    <span class="status-text"></span>
+                    <span class="w-3 h-3 rounded-full status-indicator"></span>
+                    <span id="status-text">Carregando...</span>
                 </span>
                 <div id="last-record" class="text-gray-600 font-medium text-lg"></div>
             </div>
@@ -74,57 +109,126 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 const statusBadge = document.getElementById('status-badge');
+                const statusText = document.getElementById('status-text');
+                const statusIndicator = statusBadge.querySelector('.status-indicator');
+
                 if (data.working) {
                     statusBadge.className = 'px-6 py-3 rounded-full text-lg font-semibold inline-flex items-center space-x-2 bg-green-100 text-green-800';
-                    statusBadge.innerHTML = '<span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>Trabalhando';
+                    statusIndicator.className = 'w-3 h-3 rounded-full bg-green-500';
+                    statusText.textContent = 'Trabalhando';
                 } else {
                     statusBadge.className = 'px-6 py-3 rounded-full text-lg font-semibold inline-flex items-center space-x-2 bg-red-100 text-red-800';
-                    statusBadge.innerHTML = '<span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>Ausente';
+                    statusIndicator.className = 'w-3 h-3 rounded-full bg-red-500';
+                    statusText.textContent = 'Ausente';
                 }
+
+                const lastRecord = document.getElementById('last-record');
                 if (data.last_record) {
-                    document.getElementById('last-record').textContent = `Último registro: ${data.last_record}`;
+                    lastRecord.textContent = `Último registro: ${data.last_record}`;
+                } else {
+                    lastRecord.textContent = 'Nenhum registro encontrado';
                 }
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar status:', error);
             });
     }
 
-    function showToast(message) {
+    function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toast-message');
         toastMessage.textContent = message;
+
+        const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+        toast.querySelector('div').className = `${bgColor} text-white px-6 py-4 rounded-lg shadow-lg`;
+
         toast.classList.remove('hidden');
         setTimeout(() => {
             toast.classList.add('hidden');
         }, 3000);
     }
 
+    const modal = document.getElementById('confirmModal');
+    const modalContent = document.getElementById('modalContent');
+    const confirmForm = document.getElementById('confirmForm');
+
+    function openModal() {
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeModal() {
+        modal.classList.add('opacity-0');
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            confirmForm.reset();
+        }, 300);
+    }
+
     document.getElementById('ponto-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        openModal();
+    });
+
+    document.getElementById('cancelBtn').addEventListener('click', closeModal);
+
+    document.getElementById('confirmBtn').addEventListener('click', function() {
+        const formData = new FormData(confirmForm);
+        formData.append('_token', document.querySelector('input[name="_token"]').value);
+
+        const button = document.getElementById('ponto-btn');
+        button.disabled = true;
 
         fetch('/ponto/register', {
             method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': token,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
+            body: formData
         })
         .then(response => response.json())
         .then(data => {
+            closeModal();
             if (data.status === 'success') {
-                showToast(data.message);
+                showToast(data.message, 'success');
                 updateStatus();
+                button.textContent = data.working ? 'Registrar Saída' : 'Registrar Entrada';
+            } else {
+                showToast(data.message || 'Erro ao registrar ponto', 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showToast('Erro ao registrar ponto');
+            showToast('Erro ao registrar ponto', 'error');
+        })
+        .finally(() => {
+            button.disabled = false;
         });
     });
 
+    // Fechar modal clicando fora
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Fechar com tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+
+    // Initialize
     setInterval(updateDateTime, 1000);
     updateDateTime();
     updateStatus();
+    // Atualiza o status a cada 30 segundos
+    setInterval(updateStatus, 30000);
 });
 </script>
 @endsection

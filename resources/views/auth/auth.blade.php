@@ -89,7 +89,7 @@
 
             <!-- Formulário de Registro -->
             <div id="register-form" class="form-container">
-                
+
                 <div class="mb-8">
                     <h2 class="text-3xl font-bold text-orange-400">Criar Conta</h2>
                     <p class="text-gray-600 mt-2">Preencha os dados para se registrar.</p>
@@ -143,8 +143,8 @@
     </div>
 
     <!-- Lado Direito - Imagem -->
-    <div class="w-1/2 bg-indigo-500">
-        <!-- Espaço reservado para imagem -->
+    <div class="w-1/2 bg-gray-400 flex items-center justify-center">
+        <img src="{{asset('assets/images/pontoon.png')}}" alt="">
     </div>
 </div>
 

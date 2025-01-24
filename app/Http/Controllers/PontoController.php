@@ -9,38 +9,54 @@ use Carbon\Carbon;
 
 class PontoController extends Controller
 {
-    public function register()
+    public function register(Request $request)
     {
-        $user = Auth::user();
-        $now = Carbon::now();
+        try {
+            // Validar credenciais
+            $credentials = $request->only('email', 'password');
+            if (!Auth::attempt($credentials)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Credenciais inválidas'
+                ], 401);
+            }
 
-        // Busca o último registro do usuário
-        $lastPonto = Ponto::where('user_id', $user->id)
-                         ->whereNull('saida')
-                         ->latest()
-                         ->first();
+            $user = Auth::user();
+            $now = Carbon::now();
 
-        if ($lastPonto) {
-            // Se existe um registro aberto, registra a saída
-            $lastPonto->update(['saida' => $now]);
-            $message = 'Saída registrada com sucesso!';
-            $working = false;
-        } else {
-            // Se não existe registro aberto, cria um novo com entrada
-            $ponto = Ponto::create([
-                'user_id' => $user->id,
-                'entrada' => $now,
-            ]);
-            $message = 'Entrada registrada com sucesso!';
-            $working = true;
+            // Busca o último registro do usuário
+            $lastPonto = Ponto::where('user_id', $user->id)
+                             ->whereNull('saida')
+                             ->latest()
+                             ->first();
+
+            if ($lastPonto) {
+                // Se existe um registro aberto, registra a saída
+                $lastPonto->update(['saida' => $now]);
+                $message = 'Saída registrada com sucesso!';
+                $working = false;
+            } else {
+                // Se não existe registro aberto, cria um novo com entrada
+                Ponto::create([
+                    'user_id' => $user->id,
+                    'entrada' => $now,
+                ]);
+                $message = 'Entrada registrada com sucesso!';
+                $working = true;
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => $message,
+                'data_hora' => $now->format('d/m/Y H:i:s'),
+                'working' => $working
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erro ao registrar ponto: ' . $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => $message,
-            'data_hora' => $now->format('d/m/Y H:i:s'),
-            'working' => $working
-        ]);
     }
 
     public function status()
