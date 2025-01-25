@@ -28,12 +28,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/ponto/register', [PontoController::class, 'register'])->name('ponto.register');
     Route::get('/ponto/status', [PontoController::class, 'status'])->name('ponto.status');
     Route::post('/ponto/consultar', [PontoController::class, 'consultar'])->name('ponto.consultar');
-});
-
-// Admin routes
-Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/historico', [HistoricoController::class, 'index'])->name('historico.index');
     Route::get('/historico/dados', [HistoricoController::class, 'getData'])->name('historico.dados');
 });
+
 
 
