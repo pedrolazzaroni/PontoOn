@@ -6,13 +6,13 @@ use App\Models\Ponto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class PontoController extends Controller
 {
     public function register(Request $request)
     {
         try {
-            // Validar credenciais
             $credentials = $request->only('email', 'password');
             if (!Auth::attempt($credentials)) {
                 return response()->json([
@@ -22,26 +22,30 @@ class PontoController extends Controller
             }
 
             $user = Auth::user();
-            $now = Carbon::now();
+            $now = now()->setTimezone('America/Sao_Paulo');
 
             // Busca o último registro do usuário
             $lastPonto = Ponto::where('user_id', $user->id)
                              ->whereNull('saida')
-                             ->latest()
+                             ->latest('entrada')
                              ->first();
 
             if ($lastPonto) {
-                // Se existe um registro aberto, registra a saída
-                $lastPonto->update(['saida' => $now]);
-                $message = 'Saída registrada com sucesso!';
+                // Registrar Saída
+                $lastPonto->saida = $now;
+                $lastPonto->save();
+
+                $tempoTrabalhado = $this->calcularTempoTrabalhado($lastPonto->entrada, $now);
+                $message = "Saída registrada com sucesso! Tempo trabalhado: {$tempoTrabalhado}";
                 $working = false;
             } else {
-                // Se não existe registro aberto, cria um novo com entrada
-                Ponto::create([
-                    'user_id' => $user->id,
-                    'entrada' => $now,
-                ]);
-                $message = 'Entrada registrada com sucesso!';
+                // Registrar Entrada
+                $ponto = new Ponto();
+                $ponto->user_id = $user->id;
+                $ponto->entrada = $now;
+                $ponto->save();
+
+                $message = 'Entrada registrada com sucesso às ' . $now->format('H:i:s');
                 $working = true;
             }
 
@@ -51,12 +55,23 @@ class PontoController extends Controller
                 'data_hora' => $now->format('d/m/Y H:i:s'),
                 'working' => $working
             ], 200);
+
         } catch (\Exception $e) {
+            Log::error('Erro ao registrar ponto: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'Erro ao registrar ponto: ' . $e->getMessage()
+                'message' => 'Erro ao registrar ponto'
             ], 500);
         }
+    }
+
+    private function calcularTempoTrabalhado($entrada, $saida)
+    {
+        $diffInSeconds = Carbon::parse($entrada)->diffInSeconds($saida);
+        $hours = floor($diffInSeconds / 3600);
+        $minutes = floor(($diffInSeconds % 3600) / 60);
+        $seconds = $diffInSeconds % 60;
+        return sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
     }
 
     public function status()
@@ -70,40 +85,36 @@ class PontoController extends Controller
             }
 
             $user = Auth::user();
-
-            // Verifica se há ponto aberto
             $currentPonto = Ponto::where('user_id', $user->id)
                                 ->whereNull('saida')
                                 ->latest()
                                 ->first();
 
-            // Busca os registros com eager loading do usuário
             $recentLogs = Ponto::with('user')
                               ->orderBy('entrada', 'desc')
                               ->limit(15)
-                              ->get();
+                              ->get()
+                              ->map(function($ponto) {
+                                  $entrada = Carbon::parse($ponto->entrada)->setTimezone('America/Sao_Paulo');
+                                  $saida = $ponto->saida ? Carbon::parse($ponto->saida)->setTimezone('America/Sao_Paulo') : null;
 
-            $formattedLogs = $recentLogs->map(function($ponto) {
-                $entrada = Carbon::parse($ponto->entrada);
-                $saida = $ponto->saida ? Carbon::parse($ponto->saida) : null;
-
-                return [
-                    'user_name' => $ponto->user->name,
-                    'entrada' => $entrada->format('d/m/Y H:i:s'),
-                    'saida' => $saida ? $saida->format('d/m/Y H:i:s') : null,
-                    'status' => $saida ? 'Saída' : 'Entrada',
-                    'tempo_total' => $saida ? $entrada->diff($saida)->format('%H:%I:%S') : 'Em andamento'
-                ];
-            });
+                                  return [
+                                      'user_name' => $ponto->user->name,
+                                      'entrada' => $entrada->format('d/m/Y H:i:s'),
+                                      'saida' => $saida ? $saida->format('d/m/Y H:i:s') : '-',
+                                      'status' => $saida ? 'Saída' : 'Entrada',
+                                      'tempo_total' => $saida ? $this->calcularTempoTrabalhado($entrada, $saida) : 'Em andamento'
+                                  ];
+                              });
 
             return response()->json([
                 'status' => 'success',
                 'working' => !is_null($currentPonto),
-                'logs' => $formattedLogs
+                'logs' => $recentLogs
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Erro ao buscar status: ' . $e->getMessage());
+            Log::error('Erro ao buscar status: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Erro ao buscar registros'
@@ -111,48 +122,5 @@ class PontoController extends Controller
         }
     }
 
-    public function consultar(Request $request)
-    {
-        try {
-            // Validar credenciais
-            $credentials = $request->only('email', 'password');
-            if (!Auth::attempt($credentials)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Credenciais inválidas'
-                ], 401);
-            }
-
-            $user = Auth::user();
-
-            // Buscar o último registro do usuário
-            $lastPonto = Ponto::where('user_id', $user->id)
-                             ->latest()
-                             ->first();
-
-            if ($lastPonto) {
-                $entrada = $lastPonto->entrada->format('d/m/Y H:i:s');
-                $saida = $lastPonto->saida ? $lastPonto->saida->format('d/m/Y H:i:s') : '-';
-                $tempoTrabalhado = $lastPonto->saida ? Carbon::parse($lastPonto->entrada)->diffForHumans(Carbon::parse($lastPonto->saida), ['parts' => 2]) : 'Em andamento';
-            } else {
-                $entrada = '-';
-                $saida = '-';
-                $tempoTrabalhado = '-';
-            }
-
-            return response()->json([
-                'status' => 'success',
-                'entrada' => $entrada,
-                'saida' => $saida,
-                'tempo_trabalhado' => $tempoTrabalhado
-            ], 200);
-
-        } catch (\Exception $e) {
-            \Log::error('Erro ao consultar situação: ' . $e->getMessage());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Erro ao consultar situação'
-            ], 500);
-        }
-    }
+    // Método consultar removido pois suas funcionalidades já estão cobertas pelo status()
 }
