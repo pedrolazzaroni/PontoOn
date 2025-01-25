@@ -77,28 +77,24 @@ class PontoController extends Controller
                                 ->latest()
                                 ->first();
 
-            // Busca os registros com eager loading do usuário e limita a 10 registros
+            // Busca os registros com eager loading do usuário
             $recentLogs = Ponto::with('user')
                               ->orderBy('entrada', 'desc')
-                              ->limit(10)
+                              ->limit(15)
                               ->get();
 
-            if ($recentLogs->isEmpty()) {
-                return response()->json([
-                    'status' => 'success',
-                    'working' => false,
-                    'logs' => []
-                ]);
-            }
-
             $formattedLogs = $recentLogs->map(function($ponto) {
+                $entrada = Carbon::parse($ponto->entrada);
+                $saida = $ponto->saida ? Carbon::parse($ponto->saida) : null;
+
                 return [
-                    'user_name' => optional($ponto->user)->name ?? 'Usuário Desconhecido',
-                    'entrada' => optional($ponto->entrada)->format('H:i:s'),
-                    'saida' => optional($ponto->saida)->format('H:i:s'),
-                    'status' => $ponto->saida ? 'Saída' : 'Entrada'
+                    'user_name' => $ponto->user->name,
+                    'entrada' => $entrada->format('d/m/Y H:i:s'),
+                    'saida' => $saida ? $saida->format('d/m/Y H:i:s') : null,
+                    'status' => $saida ? 'Saída' : 'Entrada',
+                    'tempo_total' => $saida ? $entrada->diff($saida)->format('%H:%I:%S') : 'Em andamento'
                 ];
-            })->filter();
+            });
 
             return response()->json([
                 'status' => 'success',
@@ -108,12 +104,9 @@ class PontoController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('Erro ao buscar status: ' . $e->getMessage());
-            \Log::error($e->getTraceAsString());
-
             return response()->json([
                 'status' => 'error',
-                'message' => 'Erro ao buscar registros',
-                'error' => $e->getMessage()
+                'message' => 'Erro ao buscar registros'
             ], 500);
         }
     }

@@ -93,6 +93,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuário</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entrada</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saída</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tempo Total</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                             </tr>
                         </thead>
@@ -158,6 +159,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.user_name || 'N/A'}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.entrada || 'N/A'}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.saida || '-'}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.tempo_total || '-'}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
                                         ${log.status === 'Entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
