@@ -13,8 +13,8 @@ Route::get('/', [DashboardController::class, 'index'])
 
 // Guest routes (login/register)
 Route::middleware('guest')->group(function () {
-    Route::get('/auth', [AuthController::class, 'showAuthForm'])->name('auth');
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::get('/login', [AuthController::class, 'showAuthForm'])->name('login'); // Alterado de /auth para /login
+    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
 });
 
