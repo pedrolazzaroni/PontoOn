@@ -38,7 +38,7 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('auth')
+        return redirect()->route('login')
                         ->with('success', 'Você foi desconectado com sucesso.');
     }
 
@@ -56,7 +56,7 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        return redirect()->route('auth')
+        return redirect()->route('login')
                         ->with('success', 'Cadastro realizado com sucesso! Por favor, faça login.');
     }
 }
