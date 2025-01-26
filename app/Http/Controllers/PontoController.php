@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Ponto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class PontoController extends Controller
 {
     public function register(Request $request)
     {
         try {
+            // Autenticação do usuário
             $credentials = $request->only('email', 'password');
             if (!Auth::attempt($credentials)) {
                 return response()->json([
@@ -24,26 +25,35 @@ class PontoController extends Controller
             $user = Auth::user();
             $now = now()->setTimezone('America/Sao_Paulo');
 
-            // Busca o último registro do usuário
+            // Busca o último registro de ponto do usuário com 'entrada' definida e 'saida' nula
             $lastPonto = Ponto::where('user_id', $user->id)
-                             ->whereNull('saida')
-                             ->latest('entrada')
-                             ->first();
+                ->whereNull('saida')
+                ->latest('entrada')
+                ->first();
 
             if ($lastPonto) {
-                // Registrar Saída
-                $lastPonto->saida = $now;
-                $lastPonto->save();
+                // Salvar o valor de 'entrada' em uma variável
+                $entradaAntiga = $lastPonto->entrada;
 
-                $tempoTrabalhado = $this->calcularTempoTrabalhado($lastPonto->entrada, $now);
+                // Deletar o registro de entrada existente
+                $lastPonto->delete();
+
+                // Criar um novo registro de ponto com 'entrada' e 'saida'
+                $novoPonto = Ponto::create([
+                    'user_id' => $user->id,
+                    'entrada' => $entradaAntiga,
+                    'saida' => $now,
+                ]);
+
+                $tempoTrabalhado = $this->calcularTempoTrabalhado($entradaAntiga, $now);
                 $message = "Saída registrada com sucesso! Tempo trabalhado: {$tempoTrabalhado}";
                 $working = false;
             } else {
-                // Registrar Entrada
-                $ponto = new Ponto();
-                $ponto->user_id = $user->id;
-                $ponto->entrada = $now;
-                $ponto->save();
+                // Registrar entrada
+                $ponto = Ponto::create([
+                    'user_id' => $user->id,
+                    'entrada' => $now
+                ]);
 
                 $message = 'Entrada registrada com sucesso às ' . $now->format('H:i:s');
                 $working = true;
@@ -55,7 +65,6 @@ class PontoController extends Controller
                 'data_hora' => $now->format('d/m/Y H:i:s'),
                 'working' => $working
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Erro ao registrar ponto: ' . $e->getMessage());
             return response()->json([
@@ -86,33 +95,32 @@ class PontoController extends Controller
 
             $user = Auth::user();
             $currentPonto = Ponto::where('user_id', $user->id)
-                                ->whereNull('saida')
-                                ->latest()
-                                ->first();
+                ->whereNull('saida')
+                ->latest()
+                ->first();
 
             $recentLogs = Ponto::with('user')
-                              ->orderBy('entrada', 'desc')
-                              ->limit(15)
-                              ->get()
-                              ->map(function($ponto) {
-                                  $entrada = Carbon::parse($ponto->entrada)->setTimezone('America/Sao_Paulo');
-                                  $saida = $ponto->saida ? Carbon::parse($ponto->saida)->setTimezone('America/Sao_Paulo') : null;
+                ->orderBy('entrada', 'desc')
+                ->limit(15)
+                ->get()
+                ->map(function ($ponto) {
+                    $entrada = Carbon::parse($ponto->entrada)->setTimezone('America/Sao_Paulo');
+                    $saida = $ponto->saida ? Carbon::parse($ponto->saida)->setTimezone('America/Sao_Paulo') : null;
 
-                                  return [
-                                      'user_name' => $ponto->user->name,
-                                      'entrada' => $entrada->format('d/m/Y H:i:s'),
-                                      'saida' => $saida ? $saida->format('d/m/Y H:i:s') : '-',
-                                      'status' => $saida ? 'Saída' : 'Entrada',
-                                      'tempo_total' => $saida ? $this->calcularTempoTrabalhado($entrada, $saida) : 'Em andamento'
-                                  ];
-                              });
+                    return [
+                        'user_name' => $ponto->user->name,
+                        'entrada' => $entrada->format('d/m/Y H:i:s'),
+                        'saida' => $saida ? $saida->format('d/m/Y H:i:s') : '-',
+                        'status' => $saida ? 'Saída' : 'Entrada',
+                        'tempo_total' => $saida ? $this->calcularTempoTrabalhado($entrada, $saida) : 'Em andamento'
+                    ];
+                });
 
             return response()->json([
                 'status' => 'success',
                 'working' => !is_null($currentPonto),
                 'logs' => $recentLogs
             ]);
-
         } catch (\Exception $e) {
             Log::error('Erro ao buscar status: ' . $e->getMessage());
             return response()->json([
@@ -121,6 +129,4 @@ class PontoController extends Controller
             ], 500);
         }
     }
-
-    // Método consultar removido pois suas funcionalidades já estão cobertas pelo status()
 }

@@ -236,6 +236,7 @@
             const formData = new FormData(confirmForm);
             formData.append('_token', document.querySelector('input[name="_token"]').value);
 
+
             const button = document.getElementById('ponto-btn');
             button.disabled = true;
 
