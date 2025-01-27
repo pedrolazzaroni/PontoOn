@@ -5,8 +5,7 @@
         </a>
         <div>
             @guest
-                <a href="{{ route('login') }}" class="text-white mr-4 hover:bg-indigo-500 px-2 py-1 rounded transition duration-300">Entrar</a>
-                <a href="{{ route('login') }}" class="text-white hover:bg-indigo-500 px-2 py-1 rounded transition duration-300">Registrar</a>
+                <a href="{{ route('login') }}" class="text-white hover:bg-orange-300 px-2 py-1 rounded transition duration-300">Login</a>
             @else
                 <span class="text-white mr-4">{{ Auth::user()->name }}</span>
                 @if(Auth::user()->is_admin)

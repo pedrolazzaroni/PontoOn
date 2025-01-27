@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Responsavel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -47,13 +48,18 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'cpf' => 'required|string|unique:responsaveis',
+            'nome_empresa' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create([
+        // Criar o responsável primeiro
+        $responsavel = Responsavel::create([
             'name' => $validated['name'],
+            'cpf' => $validated['cpf'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'nome_empresa' => $validated['nome_empresa'],
+            'password' => $validated['password'],
         ]);
 
         return redirect()->route('login')

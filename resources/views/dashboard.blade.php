@@ -18,8 +18,7 @@
             <div class="border-b border-gray-200 pb-6 mb-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-xl font-semibold text-gray-800">Bem-vindo, {{ Auth::user()->name }}</h2>
-                        <p class="text-gray-600">{{ Auth::user()->email }}</p>
+                        <h2 class="text-xl font-semibold text-gray-800">Bem-vindo</h2>
                     </div>
                     <div class="text-right">
                         <p class="text-sm text-gray-600">Último acesso:</p>

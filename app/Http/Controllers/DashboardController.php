@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+// ...existing use statements...
+
 class DashboardController extends Controller
 {
-    // Remove constructor since middleware is handled in routes
+    // Remove auth middleware since dashboard is public
 
     public function index()
     {
