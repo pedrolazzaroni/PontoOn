@@ -27,7 +27,7 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            return redirect()->intended('dashboard')->with('success', 'Login realizado com sucesso!');
+            return redirect()->intended('/')->with('success', 'Login realizado com sucesso!');
         }
 
         return back()->withErrors([

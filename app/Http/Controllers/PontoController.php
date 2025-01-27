@@ -32,20 +32,11 @@ class PontoController extends Controller
                 ->first();
 
             if ($lastPonto) {
-                // Salvar o valor de 'entrada' em uma variável
-                $entradaAntiga = $lastPonto->entrada;
+                // Atualizar apenas o campo 'saida'
+                $lastPonto->saida = $now;
+                $lastPonto->save();
 
-                // Deletar o registro de entrada existente
-                $lastPonto->delete();
-
-                // Criar um novo registro de ponto com 'entrada' e 'saida'
-                $novoPonto = Ponto::create([
-                    'user_id' => $user->id,
-                    'entrada' => $entradaAntiga,
-                    'saida' => $now,
-                ]);
-
-                $tempoTrabalhado = $this->calcularTempoTrabalhado($entradaAntiga, $now);
+                $tempoTrabalhado = $this->calcularTempoTrabalhado($lastPonto->entrada, $now);
                 $message = "Saída registrada com sucesso! Tempo trabalhado: {$tempoTrabalhado}";
                 $working = false;
             } else {
