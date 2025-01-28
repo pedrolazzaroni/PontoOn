@@ -60,14 +60,14 @@
                     <div class="mb-6">
                         <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">E-mail</label>
                         <input id="email" type="email"
-                            class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-500 outline-1"
+                            class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-300 outline-1"
                             name="email" required autofocus>
                     </div>
 
                     <div class="mb-6">
                         <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">Senha</label>
                         <input id="password" type="password"
-                            class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-500 outline-1"
+                            class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-300 outline-1"
                             name="password" required>
                     </div>
 
@@ -101,14 +101,14 @@
                         <div class="mb-6">
                             <label for="name" class="block text-gray-700 text-sm font-semibold mb-2">Nome Completo</label>
                             <input id="name" type="text"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-500 outline-1"
+                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
                                 name="name" required autofocus>
                         </div>
 
                         <div class="mb-6">
                             <label for="cpf" class="block text-gray-700 text-sm font-semibold mb-2">CPF</label>
                             <input id="cpf" type="text"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-500 outline-1"
+                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
                                 name="cpf" required
                                 pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
                                 placeholder="000.000.000-00">
@@ -117,28 +117,28 @@
                         <div class="mb-6">
                             <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">E-mail</label>
                             <input id="email" type="email"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-500 outline-1"
+                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
                                 name="email" required>
                         </div>
 
                         <div class="mb-6">
                             <label for="nome_empresa" class="block text-gray-700 text-sm font-semibold mb-2">Nome da Empresa</label>
                             <input id="nome_empresa" type="text"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-500 outline-1"
+                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
                                 name="nome_empresa" required>
                         </div>
 
                         <div class="mb-6">
                             <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">Senha</label>
                             <input id="password" type="password"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-500 outline-1"
+                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
                                 name="password" required>
                         </div>
 
                         <div class="mb-6">
                             <label for="password-confirm" class="block text-gray-700 text-sm font-semibold mb-2">Confirmar Senha</label>
                             <input id="password-confirm" type="password"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-500 outline-1"
+                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
                                 name="password_confirmation" required>
                         </div>
                     </div>

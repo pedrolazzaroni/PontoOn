@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PontoController;
 use App\Http\Controllers\HistoricoController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController;
 
 // Public Dashboard Route
 Route::get('/', [DashboardController::class, 'index']);
@@ -35,11 +36,18 @@ Route::middleware(['auth'])->group(function () {
 
 // Admin routes
 Route::middleware(['auth'])->group(function () {
+    // Rotas do admin
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.users.store');
-    Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
-    Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
-    Route::post('/admin/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admin.users.toggle-status');
+    Route::get('/admin/historico', [AdminController::class, 'historico'])->name('admin.historico');
+    Route::get('/admin/hora-extra', [AdminController::class, 'overtime'])->name('admin.hora-extra');
+    Route::get('/admin/hora-atraso', [AdminController::class, 'lateHours'])->name('admin.hora-atraso');
+
+    // Rotas de usuários
+    Route::get('/admin/usuarios', [UserController::class, 'index'])->name('admin.users');
+    Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
+    Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::post('/admin/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
 });
 
 // Authentication Routes...

@@ -2,14 +2,26 @@
 
 namespace App\Http\Controllers;
 
-// ...existing use statements...
+use App\Models\User;
+use App\Models\Ponto;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    // Remove auth middleware since dashboard is public
-
     public function index()
     {
-        return view('dashboard');
+        // Contagem de usuários ativos
+        $activeUsersCount = User::where('responsavel_id', Auth::id())
+            ->where('status', true)
+            ->count();
+
+        // Contagem de pontos registrados hoje
+        $todayPointsCount = Ponto::whereHas('user', function($query) {
+            $query->where('responsavel_id', Auth::id());
+        })
+        ->whereDate('created_at', today())
+        ->count();
+
+        return view('dashboard', compact('activeUsersCount', 'todayPointsCount'));
     }
 }
