@@ -21,7 +21,7 @@
                         <h2 class="text-xl font-semibold text-gray-800">Bem-vindo</h2>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm text-gray-600">Último acesso:</p>
+                        <p class="text-sm text-gray-600">Data atual:</p>
                         <p class="text-orange-400 font-medium">{{ now()->format('d/m/Y H:i') }}</p>
                     </div>
                 </div>
@@ -34,7 +34,8 @@
                     <div id="current-time" class="text-6xl font-bold text-orange-400"></div>
                     <div id="current-date" class="text-2xl text-gray-600"></div>
                 </div>
-                <!-- Action Section -->
+
+                <!-- Action Section - Agora disponível para todos -->
                 <div class="flex justify-center mt-6">
                     <form id="ponto-form" method="POST" class="w-full max-w-md">
                         @csrf
@@ -58,12 +59,12 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                                         <input type="email" name="email" required
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400">
+                                            class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-500 outline-1">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
                                         <input type="password" name="password" required
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400">
+                                            class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-500 outline-1">
                                     </div>
                                 </form>
                             </div>
@@ -122,74 +123,75 @@
             document.getElementById('current-date').textContent = now.toLocaleDateString();
         }
 
-        function updateStatus() {
-            const token = getCSRFToken();
-            if (!token) {
-                console.error('CSRF token não encontrado');
-                return;
-            }
-
-            fetch('/ponto/status', {
-                method: 'GET',
+        // Atualizar a função fetch para incluir o token CSRF e credentials
+        function fetchWithAuth(url, options = {}) {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            return fetch(url, {
+                ...options,
                 headers: {
+                    ...options.headers,
+                    'X-CSRF-TOKEN': token,
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token
                 },
-                credentials: 'same-origin'
-            })
-            .then(async response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'success') {
-                    const tbody = document.getElementById('logs-table-body');
-                    const emptyState = document.getElementById('empty-state');
-                    const table = tbody.closest('table');
-
-                    tbody.innerHTML = '';
-
-                    if (Array.isArray(data.logs) && data.logs.length > 0) {
-                        // Mostrar tabela e esconder estado vazio
-                        table.classList.remove('hidden');
-                        emptyState.classList.add('hidden');
-
-                        data.logs.forEach(log => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.user_name || 'N/A'}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.entrada || 'N/A'}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.saida || '-'}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.tempo_total || '-'}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                                        ${log.status === 'Entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                        ${log.status || 'N/A'}
-                                    </span>
-                                </td>
-                            `;
-                            tbody.appendChild(row);
-                        });
-                    } else {
-                        // Esconder tabela e mostrar estado vazio
-                        table.classList.add('hidden');
-                        emptyState.classList.remove('hidden');
-                    }
-
-                    // Atualiza o texto do botão
-                    const button = document.getElementById('ponto-btn');
-                    if (button) {
-                        button.textContent = data.working ? 'Registrar Saída' : 'Registrar Entrada';
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao atualizar status:', error);
-                // Removida a mensagem de toast de erro
+                credentials: 'include'
             });
+        }
+
+        function updateStatus() {
+            fetchWithAuth('/ponto/status')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.status === 'success') {
+                        const tbody = document.getElementById('logs-table-body');
+                        const emptyState = document.getElementById('empty-state');
+                        const table = tbody.closest('table');
+
+                        tbody.innerHTML = '';
+
+                        if (Array.isArray(data.logs) && data.logs.length > 0) {
+                            // Mostrar tabela e esconder estado vazio
+                            table.classList.remove('hidden');
+                            emptyState.classList.add('hidden');
+
+                            data.logs.forEach(log => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.user_name || 'N/A'}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.entrada || 'N/A'}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.saida || '-'}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.tempo_total || '-'}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                                            ${log.status === 'Entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                            ${log.status || 'N/A'}
+                                        </span>
+                                    </td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+                        } else {
+                            // Esconder tabela e mostrar estado vazio
+                            table.classList.add('hidden');
+                            emptyState.classList.remove('hidden');
+                        }
+
+                        // Atualiza o texto do botão
+                        const button = document.getElementById('ponto-btn');
+                        if (button) {
+                            button.textContent = data.working ? 'Registrar Saída' : 'Registrar Entrada';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao atualizar status:', error);
+                    showToast('Erro ao atualizar status', 'error');
+                });
         }
 
         // Atualiza o toast para mostrar mais detalhes do erro
@@ -240,37 +242,42 @@
 
         document.getElementById('confirmBtn').addEventListener('click', function() {
             const formData = new FormData(confirmForm);
-            formData.append('_token', document.querySelector('input[name="_token"]').value);
 
+            // Converter FormData para objeto JSON
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
 
-            const button = document.getElementById('ponto-btn');
-            button.disabled = true;
-
-            fetch('/ponto/register', {
+            fetchWithAuth('/ponto/register', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCSRFToken(),
+                },
+                body: JSON.stringify(jsonData)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
             .then(data => {
                 closeModal();
                 if (data.status === 'success') {
                     showToast(data.message, 'success');
                     updateStatus();
-                    button.textContent = data.working ? 'Registrar Saída' : 'Registrar Entrada';
                 } else {
                     showToast(data.message || 'Erro ao registrar ponto', 'error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showToast('Erro ao registrar ponto', 'error');
-            })
-            .finally(() => {
-                button.disabled = false;
+                showToast(error.message || 'Erro ao registrar ponto', 'error');
+                closeModal();
             });
         });
-
-        // Consultar Situação (removido)
 
         // Fechar modal clicando fora
         modal.addEventListener('click', function(e) {

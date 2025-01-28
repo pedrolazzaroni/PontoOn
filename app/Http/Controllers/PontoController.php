@@ -3,64 +3,101 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ponto;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class PontoController extends Controller
 {
     public function register(Request $request)
     {
         try {
-            // Autenticação do usuário
-            $credentials = $request->only('email', 'password');
-            if (!Auth::attempt($credentials)) {
+            // Validar os dados recebidos
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required'
+            ]);
+
+            // Buscar usuário e verificar credenciais
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Credenciais inválidas'
+                    'message' => 'Usuário não encontrado'
+                ], 404);
+            }
+
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Senha incorreta'
                 ], 401);
             }
 
-            $user = Auth::user();
+            // Verificar status do usuário
+            if (!$user->status) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Usuário não está autorizado a registrar ponto'
+                ], 403);
+            }
+
             $now = now()->setTimezone('America/Sao_Paulo');
 
-            // Busca o último registro de ponto do usuário com 'entrada' definida e 'saida' nula
+            // Buscar último registro
             $lastPonto = Ponto::where('user_id', $user->id)
                 ->whereNull('saida')
                 ->latest('entrada')
                 ->first();
 
-            if ($lastPonto) {
-                // Atualizar apenas o campo 'saida'
-                $lastPonto->saida = $now;
-                $lastPonto->save();
+            \DB::beginTransaction();
+            try {
+                if ($lastPonto) {
+                    $lastPonto->saida = $now;
+                    $lastPonto->save();
 
-                $tempoTrabalhado = $this->calcularTempoTrabalhado($lastPonto->entrada, $now);
-                $message = "Saída registrada com sucesso! Tempo trabalhado: {$tempoTrabalhado}";
-                $working = false;
-            } else {
-                // Registrar entrada
-                $ponto = Ponto::create([
-                    'user_id' => $user->id,
-                    'entrada' => $now
-                ]);
+                    $tempoTrabalhado = $this->calcularTempoTrabalhado($lastPonto->entrada, $now);
+                    $message = "Saída registrada com sucesso! Tempo trabalhado: {$tempoTrabalhado}";
+                    $working = false;
+                } else {
+                    Ponto::create([
+                        'user_id' => $user->id,
+                        'entrada' => $now
+                    ]);
 
-                $message = 'Entrada registrada com sucesso às ' . $now->format('H:i:s');
-                $working = true;
+                    $message = 'Entrada registrada com sucesso às ' . $now->format('H:i:s');
+                    $working = true;
+                }
+                \DB::commit();
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => $message,
+                    'data_hora' => $now->format('d/m/Y H:i:s'),
+                    'working' => $working
+                ], 200);
+
+            } catch (\Exception $e) {
+                \DB::rollBack();
+                throw $e;
             }
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
-                'status' => 'success',
-                'message' => $message,
-                'data_hora' => $now->format('d/m/Y H:i:s'),
-                'working' => $working
-            ], 200);
+                'status' => 'error',
+                'message' => 'Dados inválidos',
+                'errors' => $e->errors()
+            ], 422);
+
         } catch (\Exception $e) {
             Log::error('Erro ao registrar ponto: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'Erro ao registrar ponto'
+                'message' => 'Erro ao registrar ponto: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -77,22 +114,10 @@ class PontoController extends Controller
     public function status()
     {
         try {
-            if (!Auth::check()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Usuário não autenticado'
-                ], 401);
-            }
-
-            $user = Auth::user();
-            $currentPonto = Ponto::where('user_id', $user->id)
-                ->whereNull('saida')
-                ->latest()
-                ->first();
-
+            // Remover verificação de autenticação
             $recentLogs = Ponto::with('user')
                 ->orderBy('entrada', 'desc')
-                ->limit(15)
+                ->limit(5)
                 ->get()
                 ->map(function ($ponto) {
                     $entrada = Carbon::parse($ponto->entrada)->setTimezone('America/Sao_Paulo');
@@ -109,7 +134,6 @@ class PontoController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'working' => !is_null($currentPonto),
                 'logs' => $recentLogs
             ]);
         } catch (\Exception $e) {

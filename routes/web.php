@@ -8,8 +8,12 @@ use App\Http\Controllers\HistoricoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 
-// Public Dashboard Route
-Route::get('/', [DashboardController::class, 'index']);
+// Página inicial (dashboard) - sem autenticação necessária
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+// Rotas públicas
+Route::post('/ponto/register', [PontoController::class, 'register']);
+Route::get('/ponto/status', [PontoController::class, 'status']);
 
 // Guest routes (login/register)
 Route::middleware('guest')->group(function () {
@@ -26,10 +30,6 @@ Route::middleware('auth')->group(function () {
 
 // Protect other routes with auth middleware
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/ponto/register', [PontoController::class, 'register']);
-    Route::get('/ponto/status', [PontoController::class, 'status']);
-    Route::post('/ponto/consultar', [PontoController::class, 'consultar'])->name('ponto.consultar');
     Route::get('/historico', [HistoricoController::class, 'index'])->name('historico.index');
     Route::get('/historico/dados', [HistoricoController::class, 'getData']);
 });
