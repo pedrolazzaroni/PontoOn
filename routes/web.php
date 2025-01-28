@@ -11,9 +11,10 @@ Route::get('/', [DashboardController::class, 'index']);
 
 // Guest routes (login/register)
 Route::middleware('guest')->group(function () {
-    Route::get('/post', [AuthController::class, 'showAuthForm'])->name('login'); // Alterado de /auth para /login
+    Route::get('/login', [AuthController::class, 'showAuthForm'])->name('login');  // Corrigido de '/post' para '/login'
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-    Route::post('/register', [AuthController::class, 'register'])->name('register');
+    Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 });
 
 // Auth routes (logout)

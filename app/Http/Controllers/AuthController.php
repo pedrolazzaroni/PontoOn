@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Responsavel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -27,8 +27,11 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        if (Auth::attempt($credentials)) {
-            return redirect()->intended('/')->with('success', 'Login realizado com sucesso!');
+        $responsavel = Responsavel::where('email', $credentials['email'])->first();
+
+        if ($responsavel && Hash::check($credentials['password'], $responsavel->password)) {
+            Auth::login($responsavel);
+            return redirect()->route('dashboard')->with('success', 'Login realizado com sucesso!');
         }
 
         return back()->withErrors([
@@ -47,22 +50,32 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:responsaveis',
             'cpf' => 'required|string|unique:responsaveis',
             'nome_empresa' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Criar o responsável primeiro
-        $responsavel = Responsavel::create([
-            'name' => $validated['name'],
-            'cpf' => $validated['cpf'],
-            'email' => $validated['email'],
-            'nome_empresa' => $validated['nome_empresa'],
-            'password' => $validated['password'],
-        ]);
+        try {
+            $responsavel = Responsavel::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'cpf' => preg_replace('/[^0-9]/', '', $validated['cpf']), // Remove caracteres não numéricos do CPF
+                'nome_empresa' => $validated['nome_empresa'],
+                'password' => bcrypt($validated['password']), // Usar bcrypt para hash
+                'remember_token' => null,
+            ]);
 
-        return redirect()->route('login')
-                        ->with('success', 'Cadastro realizado com sucesso! Por favor, faça login.');
+            // Redireciona para o login após registro bem-sucedido
+            return redirect()->route('login')
+                ->with('success', 'Cadastro realizado com sucesso! Por favor, faça login.');
+
+        } catch (\Exception $e) {
+            // Log do erro e retorno amigável
+            Log::error('Erro ao registrar responsável: ' . $e->getMessage());
+            return back()
+                ->withInput($request->except('password'))
+                ->withErrors(['error' => 'Erro ao criar conta. Por favor, tente novamente.']);
+        }
     }
 }

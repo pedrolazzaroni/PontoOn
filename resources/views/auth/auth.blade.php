@@ -55,7 +55,7 @@
                     <p class="text-gray-600 mt-2">Por favor, faça login na sua conta.</p>
                 </div>
 
-                <form method="POST" action="{{ route('login') }}">
+                <form method="POST" action="{{ route('login.submit') }}">  <!-- Atualizado para usar login.submit -->
                     @csrf
                     <div class="mb-6">
                         <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">E-mail</label>

@@ -84,8 +84,8 @@
 
             <!-- Logs dos Últimos Usuários -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Últimos Registros de Ponto</h2>
-                <div class="overflow-x-auto">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Últimos 5 Registros de Ponto</h2>
+                <div id="logs-container" class="overflow-x-auto">
                     <table class="min-w-full">
                         <thead class="bg-orange-50">
                             <tr>
@@ -100,6 +100,10 @@
                             <!-- Logs serão inseridos aqui via JavaScript -->
                         </tbody>
                     </table>
+                    <!-- Estado vazio -->
+                    <div id="empty-state" class="hidden text-center py-8">
+                        <p class="text-gray-500">Nenhum registro de ponto encontrado.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -136,22 +140,23 @@
             })
             .then(async response => {
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
                 if (data.status === 'success') {
                     const tbody = document.getElementById('logs-table-body');
-                    if (!tbody) {
-                        console.error('Elemento logs-table-body não encontrado');
-                        return;
-                    }
-
+                    const emptyState = document.getElementById('empty-state');
+                    const table = tbody.closest('table');
+                    
                     tbody.innerHTML = '';
 
-                    if (Array.isArray(data.logs)) {
+                    if (Array.isArray(data.logs) && data.logs.length > 0) {
+                        // Mostrar tabela e esconder estado vazio
+                        table.classList.remove('hidden');
+                        emptyState.classList.add('hidden');
+                        
                         data.logs.forEach(log => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
@@ -168,6 +173,10 @@
                             `;
                             tbody.appendChild(row);
                         });
+                    } else {
+                        // Esconder tabela e mostrar estado vazio
+                        table.classList.add('hidden');
+                        emptyState.classList.remove('hidden');
                     }
 
                     // Atualiza o texto do botão
@@ -175,13 +184,11 @@
                     if (button) {
                         button.textContent = data.working ? 'Registrar Saída' : 'Registrar Entrada';
                     }
-                } else {
-                    throw new Error(data.message || 'Erro desconhecido');
                 }
             })
             .catch(error => {
                 console.error('Erro ao atualizar status:', error);
-                showToast('Erro ao atualizar registros. Por favor, recarregue a página.', 'error');
+                // Removida a mensagem de toast de erro
             });
         }
 
