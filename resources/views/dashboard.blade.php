@@ -149,14 +149,14 @@
                     const tbody = document.getElementById('logs-table-body');
                     const emptyState = document.getElementById('empty-state');
                     const table = tbody.closest('table');
-                    
+
                     tbody.innerHTML = '';
 
                     if (Array.isArray(data.logs) && data.logs.length > 0) {
                         // Mostrar tabela e esconder estado vazio
                         table.classList.remove('hidden');
                         emptyState.classList.add('hidden');
-                        
+
                         data.logs.forEach(log => {
                             const row = document.createElement('tr');
                             row.innerHTML = `

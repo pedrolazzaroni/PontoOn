@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PontoController;
 use App\Http\Controllers\HistoricoController;
+use App\Http\Controllers\AdminController;
 
 // Public Dashboard Route
 Route::get('/', [DashboardController::class, 'index']);
@@ -30,6 +31,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/ponto/consultar', [PontoController::class, 'consultar'])->name('ponto.consultar');
     Route::get('/historico', [HistoricoController::class, 'index'])->name('historico.index');
     Route::get('/historico/dados', [HistoricoController::class, 'getData']);
+});
+
+// Admin routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.users.store');
+    Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
+    Route::post('/admin/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admin.users.toggle-status');
 });
 
 // Authentication Routes...

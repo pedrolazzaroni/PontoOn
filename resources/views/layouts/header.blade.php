@@ -9,9 +9,9 @@
             @else
                 <span class="text-white mr-4">{{ Auth::user()->name }}</span>
                 @if(Auth::user()->is_admin)
-                    <a href="{{ route('historico.index') }}"
+                    <a href="{{ route('admin.dashboard') }}"
                        class="text-gray-600 hover:text-orange-500 px-3 py-2 rounded-md text-sm font-medium">
-                        Histórico de Pontos
+                        Painel Administrativo
                     </a>
                 @endif
                 <a href="{{ route('logout') }}" class="text-white hover:bg-indigo-500 px-2 py-1 rounded transition duration-300"
