@@ -1,6 +1,6 @@
 @if (session('success') || session('error') || session('info'))
 <div id="notification"
-     class="fixed top-4 right-4 bg-orange-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 transform translate-x-full">
+     class="mt-12 fixed top-4 right-4 bg-gray-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 transform translate-x-full">
     <span class="flex items-center whitespace-nowrap">
         @if(session('success'))
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@
     #notification.show {
         transform: translateX(0);
         border-color: orange-400;
-        box-shadow: 0 0 10px rgba(251, 146, 60, 0.5);
+        box-shadow: 0 0 10px rgba(213, 213, 213, 0.5);
     }
 
     #notification.hide {

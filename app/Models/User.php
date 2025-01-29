@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'status',
         'responsavel_id', // Added responsavel_id to fillable
     ];
 

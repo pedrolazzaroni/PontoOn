@@ -93,7 +93,9 @@
                 <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
                     <div>
                         <p class="font-semibold text-gray-800">{{ $late->user->name }}</p>
-                        <p class="text-sm text-gray-600">{{ $late->date->format('d/m/Y') }}</p>
+                        <p class="text-sm text-gray-600">
+                            {{ $late->date ? $late->date->format('d/m/Y') : '---' }}
+                        </p>
                     </div>
                     <span class="text-red-500 font-medium">
                         -{{ $late->late_hours }}h

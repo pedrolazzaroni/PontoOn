@@ -2,9 +2,9 @@
 @extends('layouts.header')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8 bg-white rounded-b-lg shadow-md">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex  justify-between items-center mb-6">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Gerenciamento de Usuários</h1>
             <p class="text-gray-600">Gerencie os usuários da sua empresa</p>
