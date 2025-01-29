@@ -10,8 +10,11 @@ use Carbon\CarbonPeriod;
 
 class HistoricoController extends Controller
 {
-    public function index(){
-        return view('historico.index');
+    public function index()
+    {
+        $historico = Ponto::with('user')->orderBy('entrada', 'desc')->get();
+
+        return view('admin.historico', compact('historico'));
     }
 
     public function getData(Request $request){

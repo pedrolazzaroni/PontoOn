@@ -30,7 +30,7 @@ Route::middleware('auth')->group(function () {
 
 // Protect other routes with auth middleware
 Route::middleware(['auth'])->group(function () {
-    Route::get('/historico', [HistoricoController::class, 'index'])->name('historico.index');
+    Route::get('/historico', [HistoricoController::class, 'index'])->name('historico');
     Route::get('/historico/dados', [HistoricoController::class, 'getData']);
 });
 
@@ -38,7 +38,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     // Rotas do admin
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/admin/historico', [AdminController::class, 'historico'])->name('admin.historico');
+    Route::get('/admin/historico', [HistoricoController::class, 'index'])->name('admin.historico');
     Route::get('/admin/hora-extra', [AdminController::class, 'overtime'])->name('admin.hora-extra');
     Route::get('/admin/hora-atraso', [AdminController::class, 'lateHours'])->name('admin.hora-atraso');
 

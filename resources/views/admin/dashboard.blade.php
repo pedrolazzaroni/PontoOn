@@ -2,7 +2,7 @@
 @extends('layouts.header')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8 bg-white rounded-b-lg shadow-md" style="min-height: calc(100vh - 80px);">
     <!-- Welcome Section -->
     <div class="flex justify-between items-start mb-8">
         <div>
