@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class PontoController extends Controller
@@ -54,7 +55,7 @@ class PontoController extends Controller
                 ->latest('entrada')
                 ->first();
 
-            \DB::beginTransaction();
+            DB::beginTransaction();
             try {
                 if ($lastPonto) {
                     $lastPonto->saida = $now;
@@ -72,7 +73,7 @@ class PontoController extends Controller
                     $message = 'Entrada registrada com sucesso às ' . $now->format('H:i:s');
                     $working = true;
                 }
-                \DB::commit();
+                DB::commit();
 
                 return response()->json([
                     'status' => 'success',
@@ -82,7 +83,7 @@ class PontoController extends Controller
                 ], 200);
 
             } catch (\Exception $e) {
-                \DB::rollBack();
+                DB::rollBack();
                 throw $e;
             }
 
@@ -115,6 +116,7 @@ class PontoController extends Controller
     {
         try {
             // Remover verificação de autenticação
+            Log::info('Iniciando busca de status');
             $recentLogs = Ponto::with('user')
                 ->orderBy('entrada', 'desc')
                 ->limit(5)
@@ -131,6 +133,8 @@ class PontoController extends Controller
                         'tempo_total' => $saida ? $this->calcularTempoTrabalhado($entrada, $saida) : 'Em andamento'
                     ];
                 });
+
+            Log::info('Busca de status concluída com sucesso');
 
             return response()->json([
                 'status' => 'success',

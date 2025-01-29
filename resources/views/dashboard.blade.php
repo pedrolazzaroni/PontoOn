@@ -18,7 +18,7 @@
             <div class="border-b border-gray-200 pb-6 mb-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-xl font-semibold text-gray-800">Bem-vindo</h2>
+                        <h2 class="text-xl font-semibold text-orange-500">Bem-vindo</h2>
                     </div>
                     <div class="text-right">
                         <p class="text-sm text-gray-600">Data atual:</p>
@@ -84,6 +84,7 @@
             </div>
 
             <!-- Logs dos Últimos Usuários -->
+            @if(Auth::check())
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Últimos 5 Registros de Ponto</h2>
                 <div id="logs-container" class="overflow-x-auto">
@@ -107,6 +108,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 
@@ -119,8 +121,12 @@
 
         function updateDateTime() {
             const now = new Date();
-            document.getElementById('current-time').textContent = now.toLocaleTimeString();
-            document.getElementById('current-date').textContent = now.toLocaleDateString();
+            const options = { timeZone: 'America/Sao_Paulo', hour12: false };
+            const timeString = now.toLocaleTimeString('pt-BR', options);
+            const dateString = now.toLocaleDateString('pt-BR', options);
+            document.getElementById('current-time').textContent = timeString;
+            document.getElementById('current-date').textContent = dateString;
+            document.querySelector('.text-orange-400.font-medium').textContent = `${dateString} ${timeString}`;
         }
 
         // Atualizar a função fetch para incluir o token CSRF e credentials
@@ -139,6 +145,7 @@
         }
 
         function updateStatus() {
+            @if(Auth::check())
             fetchWithAuth('/ponto/status')
                 .then(response => {
                     if (!response.ok) {
@@ -150,14 +157,16 @@
                     if (data && data.status === 'success') {
                         const tbody = document.getElementById('logs-table-body');
                         const emptyState = document.getElementById('empty-state');
-                        const table = tbody.closest('table');
+                        const table = tbody ? tbody.closest('table') : null;
 
-                        tbody.innerHTML = '';
+                        if (tbody) {
+                            tbody.innerHTML = '';
+                        }
 
                         if (Array.isArray(data.logs) && data.logs.length > 0) {
                             // Mostrar tabela e esconder estado vazio
-                            table.classList.remove('hidden');
-                            emptyState.classList.add('hidden');
+                            if (table) table.classList.remove('hidden');
+                            if (emptyState) emptyState.classList.add('hidden');
 
                             data.logs.forEach(log => {
                                 const row = document.createElement('tr');
@@ -177,8 +186,8 @@
                             });
                         } else {
                             // Esconder tabela e mostrar estado vazio
-                            table.classList.add('hidden');
-                            emptyState.classList.remove('hidden');
+                            if (table) table.classList.add('hidden');
+                            if (emptyState) emptyState.classList.remove('hidden');
                         }
 
                         // Atualiza o texto do botão
@@ -192,6 +201,7 @@
                     console.error('Erro ao atualizar status:', error);
                     showToast('Erro ao atualizar status', 'error');
                 });
+            @endif
         }
 
         // Atualiza o toast para mostrar mais detalhes do erro
@@ -297,8 +307,10 @@
         try {
             setInterval(updateDateTime, 1000);
             updateDateTime();
+            @if(Auth::check())
             updateStatus();
             setInterval(updateStatus, 30000);
+            @endif
         } catch (error) {
             console.error('Erro na inicialização:', error);
             showToast('Erro ao inicializar a página. Por favor, recarregue.', 'error');

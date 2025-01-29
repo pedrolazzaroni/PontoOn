@@ -2,8 +2,7 @@
 @extends('layouts.header')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 bg-white rounded-b-lg shadow-md">
-    <!-- Header -->
+<div class="container mx-auto px-4 py-8 bg-white rounded-b-lg shadow-md" style="min-height: calc(100vh - 80px);">
     <div class="flex  justify-between items-center mb-6">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Gerenciamento de Usuários</h1>
@@ -28,8 +27,13 @@
                        value="{{ request('search') }}"
                        class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-300 outline-1">
                 <button type="submit"
-                        class="bg-orange-400 text-white px-6 py-2 rounded-lg hover:bg-orange-500 transition-all duration-200 ease-in-out hover:shadow-lg">
+                        class="bg-orange-400 text-white px-3 rounded-lg hover:bg-orange-500 transition-all duration-200 ease-in-out hover:shadow-lg">
                     Pesquisar
+                </button>
+                <button type="button"
+                        onclick="window.location.href='{{ route('admin.users') }}'"
+                        class="bg-gray-200 text-gray-800 px-3  rounded-lg hover:bg-gray-300 transition-all duration-200 ease-in-out hover:shadow-lg">
+                    Limpar Filtros
                 </button>
             </div>
             <select name="status"
@@ -39,6 +43,7 @@
                 <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inativos</option>
             </select>
         </form>
+
     </div>
 
     <!-- Tabela de Usuários -->
