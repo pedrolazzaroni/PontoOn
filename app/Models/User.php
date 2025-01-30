@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Responsavel;
 use App\Models\Empresa;
+use App\Models\Ponto;
 
 class User extends Authenticatable
 {
@@ -56,6 +57,14 @@ class User extends Authenticatable
     public function responsavel()
     {
         return $this->belongsTo(Responsavel::class);
+    }
+
+    /**
+     * Get the overtimes associated with the user.
+     */
+    public function overtimes()
+    {
+        return $this->hasMany(Ponto::class)->where('hora_extra', '>', 0);
     }
 
 }

@@ -59,10 +59,13 @@ class PontoController extends Controller
             try {
                 if ($lastPonto) {
                     $lastPonto->saida = $now;
+                    // Calculate hora_extra based on your business logic
+                    $horaExtra = $this->calcularHoraExtra($lastPonto->entrada, $now);
+                    $lastPonto->hora_extra = $horaExtra; // Changed from horas_extras to hora_extra
                     $lastPonto->save();
 
                     $tempoTrabalhado = $this->calcularTempoTrabalhado($lastPonto->entrada, $now);
-                    $message = "Saída registrada com sucesso! Tempo trabalhado: {$tempoTrabalhado}";
+                    $message = "Saída registrada com sucesso! Tempo trabalhado: {$tempoTrabalhado}. Horas Extras: {$horaExtra}";
                     $working = false;
                 } else {
                     Ponto::create([
@@ -110,6 +113,18 @@ class PontoController extends Controller
         $minutes = floor(($diffInSeconds % 3600) / 60);
         $seconds = $diffInSeconds % 60;
         return sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+    }
+
+    private function calcularHoraExtra($entrada, $saida)
+    {
+        // Define your logic to calculate extra hours
+        // For example, assume extra hours are worked after 8 hours
+        $diffInSeconds = Carbon::parse($entrada)->diffInSeconds($saida);
+        $totalHours = $diffInSeconds / 3600;
+
+        $extraHours = $totalHours > 8 ? $totalHours - 8 : 0;
+
+        return round($extraHours, 2);
     }
 
     public function status()

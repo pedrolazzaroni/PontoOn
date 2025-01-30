@@ -86,7 +86,7 @@
             <!-- Logs dos Últimos Usuários -->
             @if(Auth::check())
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Últimos 5 Registros de Ponto</h2>
+                <h2 class="text-2xl font-semibold text-orange-500 mb-4">Últimos Registros de Ponto</h2>
                 <div id="logs-container" class="overflow-x-auto">
                     <table class="min-w-full">
                         <thead class="bg-orange-50">

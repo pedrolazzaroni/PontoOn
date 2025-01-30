@@ -7,6 +7,7 @@ use App\Http\Controllers\PontoController;
 use App\Http\Controllers\HistoricoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\HoraExtraController; // Add this line
 
 // Página inicial (dashboard) - sem autenticação necessária
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -39,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
     // Rotas do admin
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/historico', [HistoricoController::class, 'index'])->name('admin.historico');
-    Route::get('/admin/hora-extra', [AdminController::class, 'overtime'])->name('admin.hora-extra');
+    Route::get('/admin/hora-extra', [HoraExtraController::class, 'overtime'])->name('admin.hora-extra'); // Updated route
     Route::get('/admin/hora-atraso', [AdminController::class, 'lateHours'])->name('admin.hora-atraso');
 
     // Rotas de usuários

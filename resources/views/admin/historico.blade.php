@@ -13,6 +13,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entrada</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saída</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tempo Total</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hora Extra</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                 </tr>
             </thead>
@@ -32,6 +33,13 @@
                             {{ $tempoTotal }}
                         @else
                             Em andamento
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        @if($ponto->hora_extra)
+                            {{ $ponto->hora_extra }} horas
+                        @else
+                            0 horas
                         @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
