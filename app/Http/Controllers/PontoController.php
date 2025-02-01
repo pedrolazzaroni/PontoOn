@@ -59,9 +59,8 @@ class PontoController extends Controller
             try {
                 if ($lastPonto) {
                     $lastPonto->saida = $now;
-                    // Calculate hora_extra based on your business logic
                     $horaExtra = $this->calcularHoraExtra($lastPonto->entrada, $now);
-                    $lastPonto->hora_extra = $horaExtra; // Changed from horas_extras to hora_extra
+                    $lastPonto->hora_extra = $horaExtra;
                     $lastPonto->save();
 
                     $tempoTrabalhado = $this->calcularTempoTrabalhado($lastPonto->entrada, $now);
@@ -117,8 +116,6 @@ class PontoController extends Controller
 
     private function calcularHoraExtra($entrada, $saida)
     {
-        // Define your logic to calculate extra hours
-        // For example, assume extra hours are worked after 8 hours
         $diffInSeconds = Carbon::parse($entrada)->diffInSeconds($saida);
         $totalHours = $diffInSeconds / 3600;
 
@@ -130,7 +127,6 @@ class PontoController extends Controller
     public function status()
     {
         try {
-            // Remover verificação de autenticação
             Log::info('Iniciando busca de status');
             $recentLogs = Ponto::with('user')
                 ->orderBy('entrada', 'desc')

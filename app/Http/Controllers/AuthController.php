@@ -60,18 +60,16 @@ class AuthController extends Controller
             $responsavel = Responsavel::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
-                'cpf' => preg_replace('/[^0-9]/', '', $validated['cpf']), // Remove caracteres não numéricos do CPF
+                'cpf' => preg_replace('/[^0-9]/', '', $validated['cpf']),
                 'nome_empresa' => $validated['nome_empresa'],
-                'password' => bcrypt($validated['password']), // Usar bcrypt para hash
+                'password' => bcrypt($validated['password']),
                 'remember_token' => null,
             ]);
 
-            // Redireciona para o login após registro bem-sucedido
             return redirect()->route('login')
                 ->with('success', 'Cadastro realizado com sucesso! Por favor, faça login.');
 
         } catch (\Exception $e) {
-            // Log do erro e retorno amigável
             Log::error('Erro ao registrar responsável: ' . $e->getMessage());
             return back()
                 ->withInput($request->except('password'))

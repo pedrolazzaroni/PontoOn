@@ -21,7 +21,6 @@ class HistoricoController extends Controller
         $query = Ponto::with('user')
             ->orderBy('entrada', 'desc');
 
-        // Filtrar por data
         if ($request->data_inicio && $request->data_fim) {
             $query->whereBetween('entrada', [
                 Carbon::parse($request->data_inicio)->startOfDay(),
@@ -48,9 +47,6 @@ class HistoricoController extends Controller
         return response()->json(['data' => $registros]);
     }
 
-    /**
-     * Get weekly summary of worked hours and extra hours.
-     */
     public function weeklySummary(Request $request)
     {
         try {
@@ -83,7 +79,6 @@ class HistoricoController extends Controller
             $totalMinutes = floor(($totalSeconds % 3600) / 60);
             $totalTime = sprintf("%02d:%02d", $totalHours, $totalMinutes);
 
-            // Define weekly threshold (e.g., 40 hours)
             $weeklyThreshold = 40;
             $extraHours = $totalHours > $weeklyThreshold ? $totalHours - $weeklyThreshold : 0;
 
@@ -102,10 +97,6 @@ class HistoricoController extends Controller
             ], 500);
         }
     }
-
-    /**
-     * Get monthly summary of worked hours and extra hours.
-     */
     public function monthlySummary(Request $request)
     {
         try {
@@ -138,7 +129,6 @@ class HistoricoController extends Controller
             $totalMinutes = floor(($totalSeconds % 3600) / 60);
             $totalTime = sprintf("%02d:%02d", $totalHours, $totalMinutes);
 
-            // Define monthly threshold (e.g., 160 hours)
             $monthlyThreshold = 160;
             $extraHours = $totalHours > $monthlyThreshold ? $totalHours - $monthlyThreshold : 0;
 
