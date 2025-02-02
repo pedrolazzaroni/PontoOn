@@ -50,21 +50,18 @@
         const notification = document.getElementById('notification');
 
         if (notification) {
-            // Mostrar notificação
             setTimeout(() => {
                 notification.classList.add('show');
             }, 100);
 
-            // Esconder notificação após 2 segundos de visível
             setTimeout(() => {
                 notification.classList.remove('show');
                 notification.classList.add('hide');
 
-                // Remover elemento após a animação
                 setTimeout(() => {
                     notification.remove();
                 }, 500);
-            }, 3100); // 100ms para mostrar + 2000ms visível
+            }, 3100);
         }
     });
 

@@ -24,9 +24,6 @@ class Responsavel extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the users associated with the Responsavel.
-     */
     public function users()
     {
         return $this->hasMany(User::class);

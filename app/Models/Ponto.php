@@ -13,9 +13,6 @@ class Ponto extends Model
     protected $fillable = ['user_id', 'entrada', 'saida', 'horas_extras'];
     protected $dates = ['entrada', 'saida'];
 
-    /**
-     * Prepare a date for array / JSON serialization.
-     */
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');

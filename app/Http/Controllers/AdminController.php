@@ -11,10 +11,8 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        // Fetch users for the main table
         $users = User::where('responsavel_id', auth()->id())->get();
 
-        // Fetch last 4 point records
         $recentPoints = Ponto::with('user')
             ->whereHas('user', function($query) {
                 $query->where('responsavel_id', auth()->id());
@@ -23,7 +21,6 @@ class AdminController extends Controller
             ->take(4)
             ->get();
 
-        // Fetch last 4 users with overtime
         $overtimeUsers = Ponto::with('user')
             ->whereHas('user', function($query) {
                 $query->where('responsavel_id', auth()->id());
@@ -36,7 +33,6 @@ class AdminController extends Controller
             ->take(4)
             ->get();
 
-        // Fetch last 4 users with late hours
         $lateUsers = Ponto::with('user')
             ->whereHas('user', function($query) {
                 $query->where('responsavel_id', auth()->id());
