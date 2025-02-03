@@ -8,20 +8,35 @@
         <div>
             <h1 class="text-3xl font-bold text-gray-800">Olá, {{ Auth::user()->name }}</h1>
             <p class="text-gray-600 mt-2">Seus resumos atualizados</p>
+
+                <div class="bg-white rounded-lg shadow-md p-4 w-48 mt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">Horas de Trabalho</h3>
+                    <button onclick="openWorkingHoursModal()"
+                            class="inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm">
+                        Definir Expediente
+                    </button>
+                </div>
         </div>
 
-        <!-- Quick Access Card -->
-        <div class="bg-white rounded-lg shadow-md p-6 w-64">
-            <div class="text-center">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">Usuários Gerenciados</h3>
-                <p class="text-4xl font-bold text-orange-400 mb-4">{{ $users->count() }}</p>
-                <a href="{{ route('admin.users') }}"
-                   class="inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm">
-                    Gerenciar Usuários
-                </a>
+
+        <!-- Quick Access Cards -->
+        <div class="flex space-x-4">
+            <!-- Existing Users Card -->
+            <div class="bg-white rounded-lg shadow-md p-6 w-64">
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Usuários Gerenciados</h3>
+                    <p class="text-4xl font-bold text-orange-400 mb-4">{{ $users->count() }}</p>
+                    <a href="{{ route('admin.users') }}"
+                       class="inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm">
+                        Gerenciar Usuários
+                    </a>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Coloque o bloco abaixo do subtítulo, em tamanho menor -->
+
 
     <!-- Cards Grid -->
     <div class="grid grid-cols-3 gap-6 mb-8">
@@ -210,9 +225,57 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal de Definição de Horas de Trabalho -->
+    <div id="workingHoursModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Definir Horas de Trabalho</h3>
+                <form id="workingHoursForm" method="POST" action="{{ route('admin.working-hours.update') }}">
+                    @csrf
+                    @method('PUT')
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Horas de Expediente</label>
+                            <input type="number" name="expediente" min="1" max="24" required
+                                   class="mt-1 block w-full rounded-md outline outline-1 outline-gray-300 shadow-sm focus:border-orange-400 focus:ring focus:ring-orange-200">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Aplicar para:</label>
+                            <select name="users[]" multiple
+                                    class="mt-1 block w-full rounded-md outline outline-1 outline-gray-300 shadow-sm focus:border-orange-400 focus:ring focus:ring-orange-200">
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button type="button" onclick="closeWorkingHoursModal()"
+                                class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                            Cancelar
+                        </button>
+                        <button type="submit"
+                                class="px-4 py-2 bg-orange-400 text-white rounded-md hover:bg-orange-500">
+                            Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
+// Funções globais para o modal de expediente
+window.openWorkingHoursModal = function() {
+    document.getElementById('workingHoursModal').classList.remove('hidden');
+};
+
+window.closeWorkingHoursModal = function() {
+    document.getElementById('workingHoursModal').classList.add('hidden');
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     // Add toggle functionality for user management section
     const openCreateModal = document.getElementById('openCreateModal');
@@ -269,6 +332,31 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     };
+
+    // Tratamento do formulário de expediente
+    const workingHoursForm = document.getElementById('workingHoursForm');
+    workingHoursForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeWorkingHoursModal();
+                window.location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // ...existing code para outros modais...
 });
 </script>
 @endsection

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('status')->default(true);
+            $table->integer('expediente')->default(8); // Added field for working hours
             $table->rememberToken();
             $table->timestamps();
         });

@@ -49,11 +49,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
     Route::post('/admin/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
-});
 
-// Authentication Routes...
-// Remove the default Auth::routes() as custom routes are defined above
-// Auth::routes();
+    Route::put('/admin/working-hours', [AdminController::class, 'updateWorkingHours'])->name('admin.working-hours.update');
+});
 
 
 

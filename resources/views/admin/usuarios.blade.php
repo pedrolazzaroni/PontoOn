@@ -36,14 +36,22 @@
                     Limpar Filtros
                 </button>
             </div>
-            <select name="status"
-                    class="input-focus-effect p-3 rounded-lg outline outline-gray-400 outline-1">
-                <option value="">Todos os Status</option>
-                <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Ativos</option>
-                <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inativos</option>
-            </select>
+            <!-- Custom select para filtrar status -->
+            <div class="relative">
+                <div id="statusSelect"
+                    class="input-focus-effect p-3 rounded-lg outline outline-gray-400 outline-1 cursor-pointer">
+                    {{ request('status') === '1' ? 'Ativos' : (request('status') === '0' ? 'Inativos' : 'Todos os Status') }}
+                </div>
+                <!-- Hidden input para status -->
+                <input type="hidden" name="status" id="statusInput" value="{{ request('status') }}">
+                <!-- Lista de opções será gerenciada via JS -->
+                <div id="statusOptions" class="absolute left-0 right-0 mt-1 hidden bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                    <div data-value="" class="p-3 hover:bg-orange-100 cursor-pointer">Todos os Status</div>
+                    <div data-value="1" class="p-3 hover:bg-orange-100 cursor-pointer">Ativos</div>
+                    <div data-value="0" class="p-3 hover:bg-orange-100 cursor-pointer">Inativos</div>
+                </div>
+            </div>
         </form>
-
     </div>
 
     <!-- Tabela de Usuários -->
@@ -53,8 +61,9 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-1/4">Nome</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-1/4">Email</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-1/6">Data Cadastro</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-1/6">Status</th>
+                    <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-1/6 text-center">Data Cadastro</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase w-1/6">Expediente</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase w-1/6">Status</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase w-1/6">Ações</th>
                 </tr>
             </thead>
@@ -63,8 +72,9 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $user->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->created_at->format('d/m/Y') }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $user->created_at->format('d/m/Y') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $user->expediente }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
                         <span class="px-2 py-1 text-xs rounded-full {{ $user->status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                             {{ $user->status ? 'Ativo' : 'Inativo' }}
                         </span>
