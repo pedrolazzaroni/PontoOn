@@ -6,6 +6,7 @@ use App\Models\Ponto;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -80,7 +81,7 @@ class AdminController extends Controller
                 ->route('admin.dashboard')
                 ->with('success', 'Horário de expediente atualizado com sucesso!');
         } catch (\Exception $e) {
-            \Log::error('Erro ao atualizar expediente:', ['error' => $e->getMessage()]);
+            Log::error('Erro ao atualizar expediente:', ['error' => $e->getMessage()]);
 
             return redirect()
                 ->route('admin.dashboard')

@@ -18,7 +18,7 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $user->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ $user->overtimes->sum('hora_extra') }} horas
+                        {{ $user->overtimes->sum('horas_extras') }} horas
                     </td>
                 </tr>
                 @endforeach
