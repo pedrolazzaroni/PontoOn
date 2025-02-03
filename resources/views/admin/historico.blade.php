@@ -36,8 +36,8 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        @if($ponto->hora_extra)
-                            {{ $ponto->hora_extra }} horas
+                        @if($ponto->horas_extras)
+                            {{ $ponto->horas_extras }} horas
                         @else
                             0 horas
                         @endif

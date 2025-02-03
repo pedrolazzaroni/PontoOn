@@ -54,7 +54,7 @@ class User extends Authenticatable
      */
     public function overtimes()
     {
-        return $this->hasMany(Ponto::class)->where('hora_extra', '>', 0);
+        return $this->hasMany(Ponto::class)->where('horas_extras', '>', 0);
     }
 
 }

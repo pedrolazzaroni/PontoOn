@@ -59,8 +59,9 @@ class PontoController extends Controller
             try {
                 if ($lastPonto) {
                     $lastPonto->saida = $now;
-                    $horaExtra = $this->calcularHoraExtra($lastPonto->entrada, $now);
-                    $lastPonto->hora_extra = $horaExtra;
+                    // Pass user's expediente to the overtime calculation
+                    $horaExtra = $this->calcularHoraExtra($lastPonto->entrada, $now, $user->expediente);
+                    $lastPonto->horas_extras = $horaExtra;
                     $lastPonto->save();
 
                     $tempoTrabalhado = $this->calcularTempoTrabalhado($lastPonto->entrada, $now);
@@ -114,12 +115,13 @@ class PontoController extends Controller
         return sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
     }
 
-    private function calcularHoraExtra($entrada, $saida)
+    // Update to use the user's expediente value
+    private function calcularHoraExtra($entrada, $saida, $expediente)
     {
         $diffInSeconds = Carbon::parse($entrada)->diffInSeconds($saida);
         $totalHours = $diffInSeconds / 3600;
 
-        $extraHours = $totalHours > 8 ? $totalHours - 8 : 0;
+        $extraHours = $totalHours > $expediente ? $totalHours - $expediente : 0;
 
         return round($extraHours, 2);
     }
