@@ -29,22 +29,17 @@ class AdminController extends Controller
             ->take(4)
             ->get();
 
-        // Calculate overtime based on user's expediente
+        // Updated overtime query
         $overtimeUsers = Ponto::with('user')
             ->whereHas('user', function($query) {
                 $query->where('responsavel_id', auth()->id())
                       ->where('status', true);
             })
-            ->selectRaw('user_id, SUM(TIMESTAMPDIFF(HOUR, entrada, saida)) as total_hours')
-            ->whereNotNull('saida')
-            ->groupBy('user_id')
-            ->get()
-            ->map(function($point) {
-                $expediente = $point->user->expediente;
-                $point->extra_hours = max(0, $point->total_hours - $expediente);
-                return $point;
-            })
-            ->take(4);
+            ->whereNotNull('horas_extras')
+            ->where('horas_extras', '>', '00:00:00')
+            ->latest()
+            ->take(4)
+            ->get();
 
         $lateUsers = Ponto::with('user')
             ->whereHas('user', function($query) {

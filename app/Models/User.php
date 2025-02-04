@@ -57,4 +57,12 @@ class User extends Authenticatable
         return $this->hasMany(Ponto::class)->where('horas_extras', '>', 0);
     }
 
+    /**
+     * Get the user's punch records
+     */
+    public function pontos()
+    {
+        return $this->hasMany(Ponto::class);
+    }
+
 }

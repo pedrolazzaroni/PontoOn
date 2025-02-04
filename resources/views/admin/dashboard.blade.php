@@ -76,14 +76,14 @@
             </div>
 
             <div class="space-y-4">
-                @foreach($overtimeUsers as $overtime)
+                @foreach($overtimeUsers as $point)
                 <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
                     <div>
-                        <p class="font-semibold text-gray-800">{{ $overtime->user->name }}</p>
-                        <p class="text-sm text-gray-600">{{ $overtime->total_hours }} horas</p>
+                        <p class="font-semibold text-gray-800">{{ $point->user->name }}</p>
+                        <p class="text-sm text-gray-600">{{ $point->created_at->format('d/m/Y') }}</p>
                     </div>
                     <span class="text-orange-400 font-medium">
-                        +{{ $overtime->extra_hours }}h
+                        +{{ $point->horas_extras }}
                     </span>
                 </div>
                 @endforeach
