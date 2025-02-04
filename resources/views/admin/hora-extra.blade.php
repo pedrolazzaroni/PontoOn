@@ -4,7 +4,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-8 bg-white rounded-b-lg shadow-md" style="min-height: calc(100vh - 80px);">
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800">Horas Extras dos Usuários</h1>
+        <h1 class="text-3xl font-bold text-orange-600">Horas Extras dos Usuários</h1>
         <div class="flex space-x-2">
             <span class="px-4 py-2 bg-orange-100 text-orange-600 rounded-lg text-sm font-medium">
                 Total de Registros: {{ $users->sum(function($user) { return $user->pontos->count(); }) }}
@@ -23,8 +23,8 @@
                         <th class="px-6 py-4 text-left">
                             <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Acumulado</span>
                         </th>
-                        <th class="px-6 py-4 text-right">
-                            <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</span>
+                        <th class="px-6 py-4 text-center">
+                            <span class="text-xs text-center font-medium text-gray-500 uppercase tracking-wider">Ações</span>
                         </th>
                     </tr>
                 </thead>
@@ -50,31 +50,38 @@
                                     {{ number_format($user->total_horas_extras, 2) }} horas
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-right">
-                                <button onclick="toggleDetails({{ $user->id }})"
-                                        class="text-orange-600 hover:text-orange-900 transition-colors duration-200 flex items-center justify-end space-x-1">
-                                    <span>Detalhes</span>
-                                    <svg id="arrow-{{ $user->id }}" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                    </svg>
-                                </button>
+                            <td class="px-6 py-4 text-center">
+                                <div class="flex justify-center">
+                                    <button onclick="toggleDetails({{ $user->id }})"
+                                            class="text-orange-600 hover:text-orange-900 transition-colors duration-200 flex items-center space-x-1">
+                                        <span>Detalhes</span>
+                                        <svg id="arrow-{{ $user->id }}" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         <!-- Detailed Records Row -->
                         <tr id="details-{{ $user->id }}" class="hidden bg-gray-50">
-                            <td colspan="3" class="px-6 py-4">
-                                <div class="space-y-3">
-                                    @foreach($user->pontos as $ponto)
-                                    <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
-                                        <div>
-                                            <div class="text-sm text-gray-900">{{ $ponto->created_at->format('d/m/Y') }}</div>
-                                            <div class="text-xs text-gray-500">{{ $ponto->created_at->format('H:i') }}</div>
+                            <td colspan="3" class="px-6 py-0">
+                                <div id="details-content-{{ $user->id }}"
+                                     class="transition-all duration-500 ease-in-out origin-top transform opacity-0"
+                                     style="max-height: 0; overflow: hidden;">
+                                    <div class="space-y-3 p-4">
+                                        @foreach($user->pontos as $ponto)
+                                        <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm transform translate-y-4 opacity-0 transition-all duration-300"
+                                             id="record-{{ $user->id }}-{{ $loop->index }}">
+                                            <div>
+                                                <div class="text-sm text-gray-900">{{ $ponto->created_at->format('d/m/Y') }}</div>
+                                                <div class="text-xs text-gray-500">{{ $ponto->created_at->format('H:i') }}</div>
+                                            </div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
+                                                +{{ $ponto->horas_extras }}
+                                            </span>
                                         </div>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-                                            +{{ $ponto->horas_extras }}
-                                        </span>
+                                        @endforeach
                                     </div>
-                                    @endforeach
                                 </div>
                             </td>
                         </tr>
@@ -92,12 +99,9 @@
 
         <!-- Pagination Section -->
         @if($users->hasPages())
-        <div class="px-6 py-4 border-t border-gray-100">
-            <div class="flex items-center justify-between">
-                <div class="text-sm text-gray-500">
-                    Mostrando {{ $users->firstItem() }} até {{ $users->lastItem() }} de {{ $users->total() }} registros
-                </div>
-                <div class="flex space-x-1">
+        <div class="px-6 py-6 border-t border-gray-100">
+            <div class="flex flex-col items-center">
+                <div class="flex justify-center space-x-1 mb-4">
                     @if($users->onFirstPage())
                         <span class="px-4 py-2 text-gray-400 bg-gray-50 rounded-lg cursor-not-allowed">
                             Anterior
@@ -132,6 +136,9 @@
                         </span>
                     @endif
                 </div>
+                <div class="text-sm text-gray-500">
+                    Mostrando {{ $users->firstItem() }} até {{ $users->lastItem() }} de {{ $users->total() }} registros
+                </div>
             </div>
         </div>
         @endif
@@ -141,14 +148,47 @@
 <script>
 function toggleDetails(userId) {
     const detailsRow = document.getElementById(`details-${userId}`);
+    const detailsContent = document.getElementById(`details-content-${userId}`);
     const arrow = document.getElementById(`arrow-${userId}`);
+    const records = document.querySelectorAll(`[id^="record-${userId}-"]`);
 
     if (detailsRow.classList.contains('hidden')) {
+        // Show the row first
         detailsRow.classList.remove('hidden');
+
+        // Start animation after a small delay
+        setTimeout(() => {
+            // Expand content
+            detailsContent.style.maxHeight = `${detailsContent.scrollHeight}px`;
+            detailsContent.classList.remove('opacity-0');
+
+            // Animate each record with delay
+            records.forEach((record, index) => {
+                setTimeout(() => {
+                    record.classList.remove('translate-y-4', 'opacity-0');
+                }, index * 100); // Stagger animation
+            });
+        }, 50);
+
+        // Rotate arrow
         arrow.classList.add('rotate-180');
     } else {
-        detailsRow.classList.add('hidden');
+        // Collapse animation
+        detailsContent.style.maxHeight = '0px';
+        detailsContent.classList.add('opacity-0');
+
+        // Animate records out
+        records.forEach((record, index) => {
+            record.classList.add('translate-y-4', 'opacity-0');
+        });
+
+        // Rotate arrow back
         arrow.classList.remove('rotate-180');
+
+        // Hide row after animation
+        setTimeout(() => {
+            detailsRow.classList.add('hidden');
+        }, 500); // Match duration with CSS transition
     }
 }
 </script>
