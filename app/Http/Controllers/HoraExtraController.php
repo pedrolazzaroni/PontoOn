@@ -15,10 +15,10 @@ class HoraExtraController extends Controller
                     ->where('horas_extras', '>', '00:00:00')
                     ->orderBy('created_at', 'desc');
             }])
-            ->get();
+            ->paginate(20);
 
         // Calculate total overtime for each user
-        $users = $users->map(function($user) {
+        $users->getCollection()->transform(function($user) {
             $user->total_horas_extras = $user->pontos->sum(function($ponto) {
                 list($hours, $minutes, $seconds) = explode(':', $ponto->horas_extras);
                 return $hours + ($minutes/60) + ($seconds/3600);
