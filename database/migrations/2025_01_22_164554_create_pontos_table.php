@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('pontos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');  // Relacionamento com a tabela users
-            $table->time('entrada');  // Hora de entrada
-            $table->time('saida')->nullable();  // Hora de saída
-            $table->time('horas_extras')->default(0);  // Horas extras trabalhadas
+            $table->dateTime('entrada');  // Hora de entrada
+            $table->dateTime('saida')->nullable();  // Hora de saída
+            $table->time('horas_extras')->default('00:00:00');  // Horas extras trabalhadas
             $table->timestamps();
         });
     }

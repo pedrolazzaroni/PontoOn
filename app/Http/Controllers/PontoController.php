@@ -59,13 +59,22 @@ class PontoController extends Controller
             try {
                 if ($lastPonto) {
                     $lastPonto->saida = $now;
-                    // Pass user's expediente to the overtime calculation
-                    $horaExtra = $this->calcularHoraExtra($lastPonto->entrada, $now, $user->expediente);
-                    $lastPonto->horas_extras = $horaExtra;
+
+                    // Calculate total worked seconds and format as HH:MM:SS
+                    $entrada = Carbon::parse($lastPonto->entrada);
+                    $segundosTrabalhados = $entrada->diffInSeconds($now);
+                    $horasExtras = sprintf(
+                        "%02d:%02d:%02d",
+                        floor($segundosTrabalhados / 3600),
+                        floor(($segundosTrabalhados % 3600) / 60),
+                        $segundosTrabalhados % 60
+                    );
+                    $lastPonto->horas_extras = $horasExtras;
+
                     $lastPonto->save();
 
                     $tempoTrabalhado = $this->calcularTempoTrabalhado($lastPonto->entrada, $now);
-                    $message = "Saída registrada com sucesso! Tempo trabalhado: {$tempoTrabalhado}. Horas Extras: {$horaExtra}";
+                    $message = "Saída registrada com sucesso! Tempo trabalhado: {$tempoTrabalhado}. Horas Extras: {$horasExtras}";
                     $working = false;
                 } else {
                     Ponto::create([

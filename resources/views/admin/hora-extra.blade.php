@@ -19,7 +19,8 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $user->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ $user->overtimes->sum(function($overtime) {
-                            return max(0, round((strtotime($overtime->saida) - strtotime($overtime->entrada))/3600 - $overtime->user->expediente, 2));
+                            $hours = (strtotime($overtime->saida) - strtotime($overtime->entrada))/3600;
+                            return max(0, round($hours - $overtime->user->expediente, 2));
                         }) }} horas
                     </td>
                 </tr>

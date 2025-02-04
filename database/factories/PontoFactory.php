@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
+use Carbon\Carbon;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Ponto>
@@ -24,14 +25,26 @@ class PontoFactory extends Factory
         $user = User::inRandomOrder()->first();
         $expediente = $user->expediente ?? 8;
 
+        // Calculate hours difference
         $diffInSeconds = $saida->getTimestamp() - $entrada->getTimestamp();
-        $totalHours = $diffInSeconds / 3600;
-        $horasExtras = $totalHours > $expediente ? round($totalHours - $expediente, 2) : 0;
+        $expedienteEmSegundos = $expediente * 3600;
+
+        // Calculate overtime in H:i:s format
+        $horasExtras = '00:00:00';
+        if ($diffInSeconds > $expedienteEmSegundos) {
+            $segundosExtras = $diffInSeconds - $expedienteEmSegundos;
+            $horasExtras = sprintf(
+                "%02d:%02d:%02d",
+                floor($segundosExtras / 3600),
+                floor(($segundosExtras % 3600) / 60),
+                $segundosExtras % 60
+            );
+        }
 
         return [
             'user_id' => $user->id,
-            'entrada' => $entrada->format('H:i:s'),
-            'saida' => $saida->format('H:i:s'),
+            'entrada' => $entrada, // Full datetime
+            'saida' => $saida,    // Full datetime
             'horas_extras' => $horasExtras,
         ];
     }
