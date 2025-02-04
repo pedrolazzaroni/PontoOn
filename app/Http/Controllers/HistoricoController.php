@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ponto;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -12,9 +13,14 @@ class HistoricoController extends Controller
 {
     public function index()
     {
-        $historico = Ponto::with('user')->orderBy('entrada', 'desc')->get();
+        $users = User::where('responsavel_id', auth()->id())
+            ->where('status', true)
+            ->with(['pontos' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            }])
+            ->paginate(10);
 
-        return view('admin.historico', compact('historico'));
+        return view('admin.historico', compact('users'));
     }
 
     public function getData(Request $request){
