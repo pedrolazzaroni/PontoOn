@@ -5,7 +5,7 @@
 <div class="container mx-auto px-4 py-8 bg-white rounded-b-lg shadow-md" style="min-height: calc(100vh - 80px);">
     <div class="flex  justify-between items-center mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">Gerenciamento de Usuários</h1>
+            <h1 class="text-2xl font-bold text-orange-500">Gerenciamento de Usuários</h1>
             <p class="text-gray-600">Gerencie os usuários da sua empresa</p>
         </div>
         <button id="openCreateModal"
@@ -38,17 +38,16 @@
             </div>
             <!-- Custom select para filtrar status -->
             <div class="relative">
-                <div id="statusSelect"
-                    class="input-focus-effect p-3 rounded-lg outline outline-gray-400 outline-1 cursor-pointer">
-                    {{ request('status') === '1' ? 'Ativos' : (request('status') === '0' ? 'Inativos' : 'Todos os Status') }}
-                </div>
-                <!-- Hidden input para status -->
-                <input type="hidden" name="status" id="statusInput" value="{{ request('status') }}">
-                <!-- Lista de opções será gerenciada via JS -->
-                <div id="statusOptions" class="absolute left-0 right-0 mt-1 hidden bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-                    <div data-value="" class="p-3 hover:bg-orange-100 cursor-pointer">Todos os Status</div>
-                    <div data-value="1" class="p-3 hover:bg-orange-100 cursor-pointer">Ativos</div>
-                    <div data-value="0" class="p-3 hover:bg-orange-100 cursor-pointer">Inativos</div>
+                <select name="status"
+                        class="input-focus-effect appearance-none w-full p-3 rounded-lg outline outline-gray-400 outline-1 cursor-pointer bg-white pr-10">
+                    <option value="" {{ request('status') === null ? 'selected' : '' }}>Todos os Status</option>
+                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Ativos</option>
+                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inativos</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                    </svg>
                 </div>
             </div>
         </form>

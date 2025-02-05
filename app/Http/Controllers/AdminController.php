@@ -122,4 +122,76 @@ class AdminController extends Controller
         return view('admin.hora-atraso', compact('users'));
     }
 
+    public function relatorio()
+    {
+        $users = User::where('responsavel_id', auth()->id())->get();
+        return view('admin.relatorio', compact('users'));
+    }
+
+    public function relatorioData(Request $request)
+    {
+        $query = Ponto::query()
+            ->with('user')
+            ->whereHas('user', function($query) {
+                $query->where('responsavel_id', auth()->id());
+            });
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        $pontos = $query->get();
+
+        // Prepare data for charts
+        $dates = $pontos->pluck('created_at')->map(fn($date) => $date->format('d/m'))->unique()->values();
+
+        // Calculate working hours, overtime and late hours per day
+        $workingHours = [];
+        $overtime = [];
+        $late = [];
+        $totalHours = 0;
+        $totalOvertime = 0;
+        $totalLate = 0;
+
+        foreach ($dates as $date) {
+            $dayPoints = $pontos->filter(fn($p) => $p->created_at->format('d/m') === $date);
+
+            // Working hours
+            $hours = $dayPoints->sum('horas_trabalhadas');
+            $workingHours[] = $hours;
+            $totalHours += $hours;
+
+            // Overtime
+            $dayOvertime = $dayPoints->sum('horas_extras');
+            $overtime[] = $dayOvertime;
+            $totalOvertime += $dayOvertime;
+
+            // Late hours
+            $dayLate = $dayPoints->sum('atraso');
+            $late[] = $dayLate;
+            $totalLate += $dayLate;
+        }
+
+        return response()->json([
+            'dates' => $dates,
+            'workingHours' => $workingHours,
+            'overtime' => $overtime,
+            'late' => $late,
+            'stats' => [
+                'avgHours' => round($totalHours / $dates->count(), 2),
+                'totalOvertime' => round($totalOvertime, 2),
+                'totalLate' => round($totalLate, 2),
+                'daysWorked' => $dates->count()
+            ]
+        ]);
+    }
+
 }

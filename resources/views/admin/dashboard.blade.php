@@ -10,13 +10,23 @@
             <div class="w-36 h-2 rounded-full bg-orange-400"></div>
             <p class="text-gray-600 mt-2">Seus resumos atualizados</p>
 
-                <div class="bg-white rounded-lg shadow-md p-4 w-48 mt-6">
+            <div class="flex gap-4 mt-6">
+                <div class="bg-white rounded-lg shadow-md p-4 w-48">
                     <h3 class="text-lg font-semibold text-orange-500 mb-2 text-center">Horas de Trabalho</h3>
                     <button onclick="openWorkingHoursModal()"
                             class="inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm">
                         Definir Expediente
                     </button>
                 </div>
+
+                <div class="bg-white rounded-lg shadow-md p-4 w-48">
+                    <h3 class="text-lg font-semibold text-orange-500 mb-2 text-center">Relatório</h3>
+                    <a href="{{ route('admin.relatorio') }}"
+                       class="inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm text-center">
+                        Gerar Relatório
+                    </a>
+                </div>
+            </div>
         </div>
 
 
@@ -25,7 +35,7 @@
             <!-- Existing Users Card -->
             <div class="bg-white rounded-lg shadow-md p-6 w-64">
                 <div class="text-center">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Usuários Gerenciados</h3>
+                    <h3 class="text-lg font-semibold text-orange-500 mb-2">Usuários Gerenciados</h3>
                     <p class="text-4xl font-bold text-orange-400 mb-4">{{ $users->count() }}</p>
                     <a href="{{ route('admin.users') }}"
                        class="inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm">

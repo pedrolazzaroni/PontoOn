@@ -42,6 +42,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/historico', [HistoricoController::class, 'index'])->name('admin.historico');
     Route::get('/admin/hora-extra', [HoraExtraController::class, 'overtime'])->name('admin.hora-extra'); // Updated route
     Route::get('/admin/hora-atraso', [AdminController::class, 'lateHours'])->name('admin.hora-atraso');
+    Route::get('/admin/relatorio', [AdminController::class, 'relatorio'])->name('admin.relatorio'); // New route
+    Route::get('/admin/relatorio/dados', [AdminController::class, 'relatorioData'])->name('admin.relatorio.dados'); // New route
 
     // Rotas de usuários
     Route::get('/admin/usuarios', [UserController::class, 'index'])->name('admin.users');
