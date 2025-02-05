@@ -69,6 +69,17 @@ class PontoController extends Controller
                         floor(($segundosTrabalhados % 3600) / 60),
                         $segundosTrabalhados % 60
                     );
+
+                    // Calculate overtime based on user's expediente
+                    $expedienteInSeconds = $user->expediente * 3600;
+                    if ($segundosTrabalhados > $expedienteInSeconds) {
+                        $extraSeconds = $segundosTrabalhados - $expedienteInSeconds;
+                        $extraH = floor($extraSeconds / 3600);
+                        $extraM = floor(($extraSeconds % 3600) / 60);
+                        $extraS = $extraSeconds % 60;
+                        $horasExtras = sprintf('%02d:%02d:%02d', $extraH, $extraM, $extraS);
+                    }
+
                     $lastPonto->horas_extras = $horasExtras;
 
                     $lastPonto->save();
