@@ -122,16 +122,11 @@ class AdminController extends Controller
         return view('admin.hora-atraso', compact('users'));
     }
 
-    public function relatorio()
+    public function relatorio(Request $request)
     {
         $users = User::where('responsavel_id', auth()->id())->get();
-        return view('admin.relatorio', compact('users'));
-    }
 
-    public function relatorioData(Request $request)
-    {
-        $query = Ponto::query()
-            ->with('user')
+        $query = Ponto::query()->with('user')
             ->whereHas('user', function($query) {
                 $query->where('responsavel_id', auth()->id());
             });
@@ -139,21 +134,18 @@ class AdminController extends Controller
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
         }
-
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
         }
-
         if ($request->filled('end_date')) {
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
         $pontos = $query->get();
 
-        // Prepare data for charts
+        // Prepare dados para os gráficos
         $dates = $pontos->pluck('created_at')->map(fn($date) => $date->format('d/m'))->unique()->values();
 
-        // Calculate working hours, overtime and late hours per day
         $workingHours = [];
         $overtime = [];
         $late = [];
@@ -161,37 +153,43 @@ class AdminController extends Controller
         $totalOvertime = 0;
         $totalLate = 0;
 
+        // Função auxiliar para converter "HH:MM:SS" em horas (float)
+        $convertTime = function($time) {
+            if (!$time) return 0;
+            list($h, $m, $s) = explode(':', $time);
+            return (float)$h + ((float)$m)/60 + ((float)$s)/3600;
+        };
+
         foreach ($dates as $date) {
             $dayPoints = $pontos->filter(fn($p) => $p->created_at->format('d/m') === $date);
 
-            // Working hours
-            $hours = $dayPoints->sum('horas_trabalhadas');
-            $workingHours[] = $hours;
-            $totalHours += $hours;
+            $dayHours = $dayPoints->reduce(function($carry, $p) use ($convertTime) {
+                return $carry + $convertTime($p->horas_trabalhadas);
+            }, 0);
+            $workingHours[] = $dayHours;
+            $totalHours += $dayHours;
 
-            // Overtime
-            $dayOvertime = $dayPoints->sum('horas_extras');
+            $dayOvertime = $dayPoints->reduce(function($carry, $p) use ($convertTime) {
+                return $carry + $convertTime($p->horas_extras);
+            }, 0);
             $overtime[] = $dayOvertime;
             $totalOvertime += $dayOvertime;
 
-            // Late hours
-            $dayLate = $dayPoints->sum('atraso');
+            $dayLate = $dayPoints->reduce(function($carry, $p) use ($convertTime) {
+                return $carry + $convertTime($p->atraso);
+            }, 0);
             $late[] = $dayLate;
             $totalLate += $dayLate;
         }
 
-        return response()->json([
-            'dates' => $dates,
-            'workingHours' => $workingHours,
-            'overtime' => $overtime,
-            'late' => $late,
-            'stats' => [
-                'avgHours' => round($totalHours / $dates->count(), 2),
-                'totalOvertime' => round($totalOvertime, 2),
-                'totalLate' => round($totalLate, 2),
-                'daysWorked' => $dates->count()
-            ]
-        ]);
+        $stats = [
+            'avgHours'    => $dates->count() ? round($totalHours / $dates->count(), 2) : 0,
+            'totalOvertime' => round($totalOvertime, 2),
+            'totalLate'   => round($totalLate, 2),
+            'daysWorked'  => $dates->count()
+        ];
+
+        return view('admin.relatorio', compact('users', 'dates', 'workingHours', 'overtime', 'late', 'stats'));
     }
 
 }

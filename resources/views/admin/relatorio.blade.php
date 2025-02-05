@@ -72,7 +72,7 @@
     </div>
 
     <!-- Área dos Gráficos -->
-    <div id="chartsArea" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 hidden">
+    <div id="chartsArea" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <!-- Gráfico de Horas Trabalhadas -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Horas Trabalhadas</h3>
@@ -101,110 +101,57 @@
     </div>
 </div>
 
-<!-- Substitua o script do Chart.js pelo Google Charts -->
+<!-- Remova o listener de submit e utilize os dados do servidor -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
-    // Carrega a API de visualização e o pacote corechart
+    // Dados dos gráficos vindos do servidor
+    const dates = @json($dates);
+    const workingHoursData = [['Data', 'Horas Trabalhadas'], ...dates.map((date, i) => [date, @json($workingHours)[i]])];
+    const overtimeData = [['Data', 'Horas Extras'], ...dates.map((date, i) => [date, @json($overtime)[i]])];
+    const lateData = [['Data', 'Atrasos'], ...dates.map((date, i) => [date, @json($late)[i]])];
+
+    // Configurações dos gráficos
+    const workingHoursOptions = {
+        title: 'Horas Trabalhadas por Dia',
+        curveType: 'function',
+        legend: { position: 'bottom' },
+        colors: ['#f97316'],
+        pointSize: 5,
+        lineWidth: 3,
+        backgroundColor: { fill:'transparent' }
+    };
+    const overtimeOptions = {
+        title: 'Horas Extras por Dia',
+        legend: { position: 'bottom' },
+        colors: ['#f97316'],
+        backgroundColor: { fill:'transparent' }
+    };
+    const lateOptions = {
+        title: 'Atrasos por Dia',
+        legend: { position: 'bottom' },
+        colors: ['#ef4444'],
+        backgroundColor: { fill:'transparent' }
+    };
+
     google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawCharts);
 
-    document.getElementById('reportForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
+    function drawCharts() {
+        const workingHoursDataTable = google.visualization.arrayToDataTable(workingHoursData);
+        const overtimeDataTable = google.visualization.arrayToDataTable(overtimeData);
+        const lateDataTable = google.visualization.arrayToDataTable(lateData);
 
-        // Mostrar área de gráficos
-        document.getElementById('chartsArea').classList.remove('hidden');
+        const workingHoursChart = new google.visualization.LineChart(document.getElementById('workingHoursChart'));
+        const overtimeChart = new google.visualization.ColumnChart(document.getElementById('overtimeChart'));
+        const lateChart = new google.visualization.ColumnChart(document.getElementById('lateChart'));
 
-        // Fazer requisição AJAX para buscar dados
-        fetch(`/admin/relatorio/dados?${new URLSearchParams(formData)}`)
-            .then(response => response.json())
-            .then(data => {
-                // Prepara dados para os gráficos do Google
-                const workingHoursData = [['Data', 'Horas Trabalhadas']];
-                const overtimeData = [['Data', 'Horas Extras']];
-                const lateData = [['Data', 'Atrasos']];
+        workingHoursChart.draw(workingHoursDataTable, workingHoursOptions);
+        overtimeChart.draw(overtimeDataTable, overtimeOptions);
+        lateChart.draw(lateDataTable, lateOptions);
+    }
 
-                data.dates.forEach((date, index) => {
-                    workingHoursData.push([date, data.workingHours[index]]);
-                    overtimeData.push([date, data.overtime[index]]);
-                    lateData.push([date, data.late[index]]);
-                });
-
-                // Gráfico de Horas Trabalhadas (Line Chart)
-                const workingHoursChart = new google.visualization.LineChart(
-                    document.getElementById('workingHoursChart')
-                );
-                workingHoursChart.draw(
-                    google.visualization.arrayToDataTable(workingHoursData),
-                    {
-                        title: 'Horas Trabalhadas por Dia',
-                        curveType: 'function',
-                        legend: { position: 'bottom' },
-                        colors: ['#f97316'],
-                        pointSize: 5,
-                        lineWidth: 3,
-                        backgroundColor: { fill:'transparent' }
-                    }
-                );
-
-                // Gráfico de Horas Extras (Column Chart)
-                const overtimeChart = new google.visualization.ColumnChart(
-                    document.getElementById('overtimeChart')
-                );
-                overtimeChart.draw(
-                    google.visualization.arrayToDataTable(overtimeData),
-                    {
-                        title: 'Horas Extras por Dia',
-                        legend: { position: 'bottom' },
-                        colors: ['#f97316'],
-                        backgroundColor: { fill:'transparent' }
-                    }
-                );
-
-                // Gráfico de Atrasos (Column Chart)
-                const lateChart = new google.visualization.ColumnChart(
-                    document.getElementById('lateChart')
-                );
-                lateChart.draw(
-                    google.visualization.arrayToDataTable(lateData),
-                    {
-                        title: 'Atrasos por Dia',
-                        legend: { position: 'bottom' },
-                        colors: ['#ef4444'],
-                        backgroundColor: { fill:'transparent' }
-                    }
-                );
-
-                // Atualizar resumo estatístico
-                const statsHtml = `
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="p-4 bg-orange-50 rounded-lg">
-                            <p class="text-sm text-gray-600">Média de Horas/Dia</p>
-                            <p class="text-2xl font-bold text-orange-600">${data.stats.avgHours}h</p>
-                        </div>
-                        <div class="p-4 bg-green-50 rounded-lg">
-                            <p class="text-sm text-gray-600">Total Horas Extras</p>
-                            <p class="text-2xl font-bold text-green-600">${data.stats.totalOvertime}h</p>
-                        </div>
-                        <div class="p-4 bg-red-50 rounded-lg">
-                            <p class="text-sm text-gray-600">Total Atrasos</p>
-                            <p class="text-2xl font-bold text-red-600">${data.stats.totalLate}h</p>
-                        </div>
-                        <div class="p-4 bg-blue-50 rounded-lg">
-                            <p class="text-sm text-gray-600">Dias Trabalhados</p>
-                            <p class="text-2xl font-bold text-blue-600">${data.stats.daysWorked}</p>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('statsDisplay').innerHTML = statsHtml;
-            });
-    });
-
-    // Função para redimensionar os gráficos quando a janela for redimensionada
-    window.addEventListener('resize', function() {
-        if (typeof workingHoursChart !== 'undefined') workingHoursChart.draw(workingHoursData, workingHoursOptions);
-        if (typeof overtimeChart !== 'undefined') overtimeChart.draw(overtimeData, overtimeOptions);
-        if (typeof lateChart !== 'undefined') lateChart.draw(lateData, lateOptions);
-    });
+    // Redesenha os gráficos em caso de redimensionamento da janela
+    window.addEventListener('resize', drawCharts);
 </script>
 
 @endsection
