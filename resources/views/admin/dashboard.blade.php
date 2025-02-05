@@ -6,11 +6,12 @@
     <!-- Welcome Section -->
     <div class="flex justify-between items-start mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-800">Olá, {{ Auth::user()->name }}</h1>
+            <h1 class="text-3xl font-bold text-orange-500">Olá, {{ Auth::user()->name }}</h1>
+            <div class="w-36 h-2 rounded-full bg-orange-400"></div>
             <p class="text-gray-600 mt-2">Seus resumos atualizados</p>
 
                 <div class="bg-white rounded-lg shadow-md p-4 w-48 mt-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">Horas de Trabalho</h3>
+                    <h3 class="text-lg font-semibold text-orange-500 mb-2 text-center">Horas de Trabalho</h3>
                     <button onclick="openWorkingHoursModal()"
                             class="inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm">
                         Definir Expediente
