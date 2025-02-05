@@ -52,6 +52,20 @@ class AdminController extends Controller
             ->take(4)
             ->get();
 
+        // Compute late_hours for each record
+        $lateUsers->each(function($late) {
+            $scheduledStart = Carbon::parse($late->created_at->format('Y-m-d') . ' 09:00:00');
+            if ($late->entrada && Carbon::parse($late->entrada)->greaterThan($scheduledStart)) {
+                $lateSeconds = $scheduledStart->diffInSeconds(Carbon::parse($late->entrada));
+                $hours = floor($lateSeconds / 3600);
+                $minutes = floor(($lateSeconds % 3600) / 60);
+                $seconds = $lateSeconds % 60;
+                $late->late_hours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+            } else {
+                $late->late_hours = '00:00:00';
+            }
+        });
+
         // Debug para verificar os usuários
         \Log::info('Usuários carregados:', ['count' => $users->count(), 'users' => $users->toArray()]);
 

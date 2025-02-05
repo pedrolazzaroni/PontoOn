@@ -109,11 +109,11 @@
                     <div>
                         <p class="font-semibold text-gray-800">{{ $late->user->name }}</p>
                         <p class="text-sm text-gray-600">
-                            {{ $late->date ? $late->date->format('d/m/Y') : '---' }}
+                            {{ optional($late->entrada)->format('d/m/Y') ?? '---' }}
                         </p>
                     </div>
                     <span class="text-red-500 font-medium">
-                        -{{ $late->late_hours }}h
+                        Atraso: {{ $late->late_hours }}
                     </span>
                 </div>
                 @endforeach

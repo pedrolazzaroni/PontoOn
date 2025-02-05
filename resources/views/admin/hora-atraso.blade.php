@@ -14,28 +14,17 @@
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead>
-                    <tr class="bg-gray-50">
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Usuário
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Tempo de Atraso
-                        </th>
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Usuário</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Atraso Total</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 bg-white">
                     @forelse($users as $user)
                     <tr class="hover:bg-gray-50 transition-colors duration-200">
                         <td class="px-6 py-4">
-                            <div class="flex items-center space-x-3">
-                                <div class="flex-shrink-0 h-10 w-10 bg-orange-100 rounded-full flex items-center justify-center">
-                                    <span class="text-lg font-medium text-orange-600">{{ substr($user->name, 0, 1) }}</span>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
-                                    <div class="text-xs text-gray-500">{{ $user->email }}</div>
-                                </div>
-                            </div>
+                            <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                            <div class="text-xs text-gray-500">{{ $user->email }}</div>
                         </td>
                         <td class="px-6 py-4">
                             <span class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
@@ -46,7 +35,7 @@
                     @empty
                     <tr>
                         <td colspan="2" class="px-6 py-4 text-center text-gray-500">
-                            Nenhum registro de horário em atraso encontrado.
+                            Nenhum registro de atraso encontrado.
                         </td>
                     </tr>
                     @endforelse
