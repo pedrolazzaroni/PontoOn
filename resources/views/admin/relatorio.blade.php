@@ -94,8 +94,40 @@
         <!-- Resumo Estatístico -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Resumo</h3>
-            <div id="statsDisplay" class="space-y-4">
-                <!-- Será preenchido via JavaScript -->
+            <div id="statsDisplay" class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Média de Horas/Dia</p>
+                    <p class="text-xl font-bold text-orange-500">{{ $stats['mediaHoras'] }}h</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Total de Horas</p>
+                    <p class="text-xl font-bold text-blue-500">{{ $stats['horasTotais'] }}h</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Total Horas Extras</p>
+                    <p class="text-xl font-bold text-green-500">{{ $stats['totalHorasExtras'] }}h</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Total Atrasos</p>
+                    <p class="text-xl font-bold text-red-500">{{ $stats['totalAtrasos'] }}h</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Total de Registros</p>
+                    <p class="text-xl font-bold text-gray-700">{{ $stats['totalRegistros'] }}</p>
+                    <p class="text-xs text-gray-500">Média: {{ $stats['mediaRegistrosDia'] }}/dia</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Dias Trabalhados</p>
+                    <p class="text-xl font-bold text-gray-700">{{ $stats['diasTrabalhados'] }}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Máximo de Horas/Dia</p>
+                    <p class="text-xl font-bold text-green-500">{{ $stats['maxHoras'] }}h</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Mínimo de Horas/Dia</p>
+                    <p class="text-xl font-bold text-yellow-500">{{ $stats['minHoras'] }}h</p>
+                </div>
             </div>
         </div>
     </div>
@@ -111,26 +143,55 @@
     const lateData = [['Data', 'Atrasos'], ...dates.map((date, i) => [date, @json($late)[i]])];
 
     // Configurações dos gráficos
+    const commonChartOptions = {
+        legend: { position: 'bottom' },
+        backgroundColor: { fill:'transparent' },
+        chartArea: {
+            width: '90%',
+            height: '70%'
+        },
+        animation: {
+            startup: true,
+            duration: 1000,
+            easing: 'out'
+        },
+        hAxis: {
+            slantedText: true,
+            slantedTextAngle: 45
+        }
+    };
+
     const workingHoursOptions = {
+        ...commonChartOptions,
         title: 'Horas Trabalhadas por Dia',
         curveType: 'function',
-        legend: { position: 'bottom' },
         colors: ['#f97316'],
         pointSize: 5,
         lineWidth: 3,
-        backgroundColor: { fill:'transparent' }
+        vAxis: {
+            title: 'Horas',
+            format: '# h'
+        }
     };
+
     const overtimeOptions = {
+        ...commonChartOptions,
         title: 'Horas Extras por Dia',
-        legend: { position: 'bottom' },
         colors: ['#f97316'],
-        backgroundColor: { fill:'transparent' }
+        vAxis: {
+            title: 'Horas',
+            format: '# h'
+        }
     };
+
     const lateOptions = {
+        ...commonChartOptions,
         title: 'Atrasos por Dia',
-        legend: { position: 'bottom' },
         colors: ['#ef4444'],
-        backgroundColor: { fill:'transparent' }
+        vAxis: {
+            title: 'Horas',
+            format: '# h'
+        }
     };
 
     google.charts.load('current', {'packages':['corechart']});

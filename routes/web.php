@@ -8,6 +8,7 @@ use App\Http\Controllers\HistoricoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HoraExtraController; // Add this line
+use App\Http\Controllers\RelatorioController; // Add this line
 
 // Página inicial (dashboard) - sem autenticação necessária
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -42,8 +43,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/historico', [HistoricoController::class, 'index'])->name('admin.historico');
     Route::get('/admin/hora-extra', [HoraExtraController::class, 'overtime'])->name('admin.hora-extra'); // Updated route
     Route::get('/admin/hora-atraso', [AdminController::class, 'lateHours'])->name('admin.hora-atraso');
-    Route::get('/admin/relatorio', [AdminController::class, 'relatorio'])->name('admin.relatorio'); // New route
-    Route::get('/admin/relatorio/dados', [AdminController::class, 'relatorioData'])->name('admin.relatorio.dados'); // New route
+    Route::get('/admin/relatorio', [RelatorioController::class, 'index'])->name('admin.relatorio'); // Updated route
+    Route::get('/admin/relatorio/dados', [RelatorioController::class, 'relatorioData'])->name('admin.relatorio.dados'); // New route
 
     // Rotas de usuários
     Route::get('/admin/usuarios', [UserController::class, 'index'])->name('admin.users');
