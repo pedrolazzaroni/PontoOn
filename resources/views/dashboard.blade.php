@@ -29,7 +29,7 @@
 
             <!-- Registro de Ponto -->
             <div class="bg-orange-50 rounded-lg p-8 mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Registro de Ponto Teste</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Registro de Ponto</h1>
                 <div class="text-center space-y-2">
                     <div id="current-time" class="text-6xl font-bold text-orange-400"></div>
                     <div id="current-date" class="text-2xl text-gray-600"></div>
