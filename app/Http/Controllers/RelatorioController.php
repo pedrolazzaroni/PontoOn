@@ -60,17 +60,16 @@ class RelatorioController extends Controller
                     $totalEntries++;
                 }
 
-                // Calculate overtime - Fixed the variable name conflict and parsing
-                if ($ponto->horas_extras) {
-                    $overtimeTime = Carbon::parse($ponto->horas_extras);
-                    $startOfDay = Carbon::today();
-                    $dayOvertimeSeconds += $startOfDay->diffInSeconds($overtimeTime);
+                // Calculate overtime using the stored horas_extras
+                if ($ponto->horas_extras && $ponto->horas_extras !== '00:00:00') {
+                    list($hours, $minutes, $seconds) = explode(':', $ponto->horas_extras);
+                    $dayOvertimeSeconds += ($hours * 3600) + ($minutes * 60) + $seconds;
                 }
 
-                // Calculate late time
-                $scheduledStart = Carbon::parse($ponto->created_at->format('Y-m-d') . ' 09:00:00');
-                if ($ponto->entrada && Carbon::parse($ponto->entrada)->greaterThan($scheduledStart)) {
-                    $dayLateSeconds += $scheduledStart->diffInSeconds(Carbon::parse($ponto->entrada));
+                // Calculate late time using the stored atraso
+                if ($ponto->atraso && $ponto->atraso !== '00:00:00') {
+                    list($hours, $minutes, $seconds) = explode(':', $ponto->atraso);
+                    $dayLateSeconds += ($hours * 3600) + ($minutes * 60) + $seconds;
                 }
             }
 
