@@ -77,25 +77,20 @@ class AdminController extends Controller
     {
         $request->validate([
             'expediente' => 'required|integer|min:1|max:24',
-            'users' => 'required|array',
-            'users.*' => 'exists:users,id'
         ]);
 
         try {
-            // Garante que apenas usuários vinculados ao responsável sejam atualizados
+            // Atualiza o expediente para todos os usuários vinculados ao responsável
             User::where('responsavel_id', auth()->id())
-                ->whereIn('id', $request->users)
                 ->update(['expediente' => $request->expediente]);
 
-            return redirect()
-                ->route('admin.dashboard')
-                ->with('success', 'Horário de expediente atualizado com sucesso!');
+            return redirect()->route('admin.dashboard')
+                        ->with('success', 'Expediente atualizado com sucesso.');
         } catch (\Exception $e) {
             Log::error('Erro ao atualizar expediente:', ['error' => $e->getMessage()]);
 
-            return redirect()
-                ->route('admin.dashboard')
-                ->with('error', 'Erro ao atualizar horário de expediente');
+            return redirect()->route('admin.dashboard')
+                        ->with('error', 'Erro ao atualizar expediente.');
         }
     }
 

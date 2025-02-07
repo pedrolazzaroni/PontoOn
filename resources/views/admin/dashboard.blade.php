@@ -248,27 +248,26 @@
                     @method('PUT')
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Horas de Expediente</label>
-                            <input type="number" name="expediente" min="1" max="24" required
-                                   class="mt-1 block w-full rounded-md outline outline-1 outline-gray-300 shadow-sm focus:border-orange-400 focus:ring focus:ring-orange-200">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Aplicar para:</label>
-                            <select name="users[]" multiple
-                                    class="mt-1 block w-full rounded-md outline outline-1 outline-gray-300 shadow-sm focus:border-orange-400 focus:ring focus:ring-orange-200">
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                @endforeach
-                            </select>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Horas de Expediente</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="number"
+                                       name="expediente"
+                                       min="1"
+                                       max="24"
+                                       required
+                                       class="flex-1 w-full p-3 rounded-lg outline outline-1 outline-gray-300 shadow-sm focus:border-orange-400 focus:ring focus:ring-orange-200">
+                                <span class="text-gray-600">horas</span>
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500">Este valor será aplicado a todos os funcionários.</p>
                         </div>
                     </div>
                     <div class="mt-6 flex justify-end space-x-3">
                         <button type="button" onclick="closeWorkingHoursModal()"
-                                class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                                class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:text-gray-800 cursor-pointer">
                             Cancelar
                         </button>
                         <button type="submit"
-                                class="px-4 py-2 bg-orange-400 text-white rounded-md hover:bg-orange-500">
+                                class="px-4 py-2 bg-orange-400 text-white rounded-md hover:bg-orange-500 cursor-pointer">
                             Salvar
                         </button>
                     </div>
@@ -359,30 +358,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Tratamento do formulário de expediente
-    const workingHoursForm = document.getElementById('workingHoursForm');
-    workingHoursForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-
-        fetch(this.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                closeWorkingHoursModal();
-                window.location.reload();
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-
-    // ...existing code para outros modais...
 });
 </script>
 @endsection
