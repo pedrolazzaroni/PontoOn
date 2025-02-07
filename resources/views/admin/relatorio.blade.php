@@ -72,147 +72,163 @@
     </div>
 
     <!-- Área dos Gráficos -->
-    <div id="chartsArea" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <!-- Gráfico de Horas Trabalhadas -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Horas Trabalhadas</h3>
-            <div id="workingHoursChart"></div>
-        </div>
+    @if(count($dates) > 0)
+        <div id="chartsArea" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Gráfico de Horas Trabalhadas -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Horas Trabalhadas</h3>
+                <div id="workingHoursChart"></div>
+            </div>
 
-        <!-- Gráfico de Horas Extras -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Horas Extras</h3>
-            <div id="overtimeChart"></div>
-        </div>
+            <!-- Gráfico de Horas Extras -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Horas Extras</h3>
+                <div id="overtimeChart"></div>
+            </div>
 
-        <!-- Gráfico de Atrasos -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Atrasos</h3>
-            <div id="lateChart"></div>
-        </div>
+            <!-- Gráfico de Atrasos -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Atrasos</h3>
+                <div id="lateChart"></div>
+            </div>
 
-        <!-- Resumo Estatístico -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Resumo</h3>
-            <div id="statsDisplay" class="grid grid-cols-2 gap-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Média de Horas/Dia</p>
-                    <p class="text-xl font-bold text-orange-500">{{ $stats['mediaHoras'] }}h</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Total de Horas</p>
-                    <p class="text-xl font-bold text-blue-500">{{ $stats['horasTotais'] }}h</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Total Horas Extras</p>
-                    <p class="text-xl font-bold text-green-500">{{ $stats['totalHorasExtras'] }}h</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Total Atrasos</p>
-                    <p class="text-xl font-bold text-red-500">{{ $stats['totalAtrasos'] }}h</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Total de Registros</p>
-                    <p class="text-xl font-bold text-gray-700">{{ $stats['totalRegistros'] }}</p>
-                    <p class="text-xs text-gray-500">Média: {{ $stats['mediaRegistrosDia'] }}/dia</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Dias Trabalhados</p>
-                    <p class="text-xl font-bold text-gray-700">{{ $stats['diasTrabalhados'] }}</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Máximo de Horas/Dia</p>
-                    <p class="text-xl font-bold text-green-500">{{ $stats['maxHoras'] }}h</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Mínimo de Horas/Dia</p>
-                    <p class="text-xl font-bold text-yellow-500">{{ $stats['minHoras'] }}h</p>
+            <!-- Resumo Estatístico -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Resumo</h3>
+                <div id="statsDisplay" class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Média de Horas/Dia</p>
+                        <p class="text-xl font-bold text-orange-500">{{ $stats['mediaHoras'] }}h</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Total de Horas</p>
+                        <p class="text-xl font-bold text-blue-500">{{ $stats['horasTotais'] }}h</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Total Horas Extras</p>
+                        <p class="text-xl font-bold text-green-500">{{ $stats['totalHorasExtras'] }}h</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Total Atrasos</p>
+                        <p class="text-xl font-bold text-red-500">{{ $stats['totalAtrasos'] }}h</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Total de Registros</p>
+                        <p class="text-xl font-bold text-gray-700">{{ $stats['totalRegistros'] }}</p>
+                        <p class="text-xs text-gray-500">Média: {{ $stats['mediaRegistrosDia'] }}/dia</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Dias Trabalhados</p>
+                        <p class="text-xl font-bold text-gray-700">{{ $stats['diasTrabalhados'] }}</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Máximo de Horas/Dia</p>
+                        <p class="text-xl font-bold text-green-500">{{ $stats['maxHoras'] }}h</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Mínimo de Horas/Dia</p>
+                        <p class="text-xl font-bold text-yellow-500">{{ $stats['minHoras'] }}h</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @else
+        <div class="bg-white rounded-lg shadow-md p-8 mb-6">
+            <div class="text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <h3 class="mt-2 text-lg font-medium text-gray-900">Nenhum registro encontrado</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    Não existem pontos registrados para o período e filtros selecionados.
+                </p>
+            </div>
+        </div>
+    @endif
 </div>
 
-<!-- Remova o listener de submit e utilize os dados do servidor -->
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-    // Dados dos gráficos vindos do servidor
-    const dates = @json($dates);
-    const workingHoursData = [['Data', 'Horas Trabalhadas'], ...dates.map((date, i) => [date, @json($workingHours)[i]])];
-    const overtimeData = [['Data', 'Horas Extras'], ...dates.map((date, i) => [date, @json($overtime)[i]])];
-    const lateData = [['Data', 'Atrasos'], ...dates.map((date, i) => [date, @json($late)[i]])];
+@if(count($dates) > 0)
+    <!-- Scripts dos gráficos -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        // Dados dos gráficos vindos do servidor
+        const dates = @json($dates);
+        const workingHoursData = [['Data', 'Horas Trabalhadas'], ...dates.map((date, i) => [date, @json($workingHours)[i]])];
+        const overtimeData = [['Data', 'Horas Extras'], ...dates.map((date, i) => [date, @json($overtime)[i]])];
+        const lateData = [['Data', 'Atrasos'], ...dates.map((date, i) => [date, @json($late)[i]])];
 
-    // Configurações dos gráficos
-    const commonChartOptions = {
-        legend: { position: 'bottom' },
-        backgroundColor: { fill:'transparent' },
-        chartArea: {
-            width: '90%',
-            height: '70%'
-        },
-        animation: {
-            startup: true,
-            duration: 1000,
-            easing: 'out'
-        },
-        hAxis: {
-            slantedText: true,
-            slantedTextAngle: 45
+        // Configurações dos gráficos
+        const commonChartOptions = {
+            legend: { position: 'bottom' },
+            backgroundColor: { fill:'transparent' },
+            chartArea: {
+                width: '90%',
+                height: '70%'
+            },
+            animation: {
+                startup: true,
+                duration: 1000,
+                easing: 'out'
+            },
+            hAxis: {
+                slantedText: true,
+                slantedTextAngle: 45
+            }
+        };
+
+        const workingHoursOptions = {
+            ...commonChartOptions,
+            title: 'Horas Trabalhadas por Dia',
+            curveType: 'function',
+            colors: ['#f97316'],
+            pointSize: 5,
+            lineWidth: 3,
+            vAxis: {
+                title: 'Horas',
+                format: '# h'
+            }
+        };
+
+        const overtimeOptions = {
+            ...commonChartOptions,
+            title: 'Horas Extras por Dia',
+            colors: ['#f97316'],
+            vAxis: {
+                title: 'Horas',
+                format: '# h'
+            }
+        };
+
+        const lateOptions = {
+            ...commonChartOptions,
+            title: 'Atrasos por Dia',
+            colors: ['#ef4444'],
+            vAxis: {
+                title: 'Horas',
+                format: '# h'
+            }
+        };
+
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            const workingHoursDataTable = google.visualization.arrayToDataTable(workingHoursData);
+            const overtimeDataTable = google.visualization.arrayToDataTable(overtimeData);
+            const lateDataTable = google.visualization.arrayToDataTable(lateData);
+
+            const workingHoursChart = new google.visualization.LineChart(document.getElementById('workingHoursChart'));
+            const overtimeChart = new google.visualization.ColumnChart(document.getElementById('overtimeChart'));
+            const lateChart = new google.visualization.ColumnChart(document.getElementById('lateChart'));
+
+            workingHoursChart.draw(workingHoursDataTable, workingHoursOptions);
+            overtimeChart.draw(overtimeDataTable, overtimeOptions);
+            lateChart.draw(lateDataTable, lateOptions);
         }
-    };
 
-    const workingHoursOptions = {
-        ...commonChartOptions,
-        title: 'Horas Trabalhadas por Dia',
-        curveType: 'function',
-        colors: ['#f97316'],
-        pointSize: 5,
-        lineWidth: 3,
-        vAxis: {
-            title: 'Horas',
-            format: '# h'
-        }
-    };
-
-    const overtimeOptions = {
-        ...commonChartOptions,
-        title: 'Horas Extras por Dia',
-        colors: ['#f97316'],
-        vAxis: {
-            title: 'Horas',
-            format: '# h'
-        }
-    };
-
-    const lateOptions = {
-        ...commonChartOptions,
-        title: 'Atrasos por Dia',
-        colors: ['#ef4444'],
-        vAxis: {
-            title: 'Horas',
-            format: '# h'
-        }
-    };
-
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawCharts);
-
-    function drawCharts() {
-        const workingHoursDataTable = google.visualization.arrayToDataTable(workingHoursData);
-        const overtimeDataTable = google.visualization.arrayToDataTable(overtimeData);
-        const lateDataTable = google.visualization.arrayToDataTable(lateData);
-
-        const workingHoursChart = new google.visualization.LineChart(document.getElementById('workingHoursChart'));
-        const overtimeChart = new google.visualization.ColumnChart(document.getElementById('overtimeChart'));
-        const lateChart = new google.visualization.ColumnChart(document.getElementById('lateChart'));
-
-        workingHoursChart.draw(workingHoursDataTable, workingHoursOptions);
-        overtimeChart.draw(overtimeDataTable, overtimeOptions);
-        lateChart.draw(lateDataTable, lateOptions);
-    }
-
-    // Redesenha os gráficos em caso de redimensionamento da janela
-    window.addEventListener('resize', drawCharts);
-</script>
+        // Redesenha os gráficos em caso de redimensionamento da janela
+        window.addEventListener('resize', drawCharts);
+    </script>
+@endif
 
 @endsection
