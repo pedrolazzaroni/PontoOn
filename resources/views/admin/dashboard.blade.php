@@ -13,9 +13,13 @@
             <div class="flex gap-4 mt-6">
                 <div class="bg-white rounded-lg shadow-md p-4 w-48">
                     <h3 class="text-lg font-semibold text-orange-500 mb-2 text-center">Horas de Trabalho</h3>
-                    <button onclick="openWorkingHoursModal()"
-                            class="inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm cursor-pointer">
-                        Definir Expediente
+                    <button onclick="openWorkingHoursModal()" class="group relative inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm cursor-pointer">
+                        <span class="block transition-opacity duration-300 group-hover:opacity-0">
+                            {{ $avgWorkingHours }} Horas
+                        </span>
+                        <span class="absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                            Definir Expediente
+                        </span>
                     </button>
                 </div>
 
