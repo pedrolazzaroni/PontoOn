@@ -29,13 +29,13 @@
 
             <!-- Registro de Ponto -->
             <div class="bg-orange-50 rounded-lg p-8 mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Registro de teste</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Registro de Ponto</h1>
                 <div class="text-center space-y-2">
                     <div id="current-time" class="text-6xl font-bold text-orange-400"></div>
                     <div id="current-date" class="text-2xl text-gray-600"></div>
                 </div>
 
-                <!-- Action Section - Agora disponível para todos -->
+                <!-- Action Section -->
                 <div class="flex justify-center mt-6">
                     <form id="ponto-form" method="POST" class="w-full max-w-md">
                         @csrf
@@ -48,7 +48,7 @@
                     </form>
                 </div>
                 <!-- Modal de Confirmação -->
-                <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden opacity-0 transition-opacity duration-300">
+                <div id="confirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
                     <div class="flex items-center justify-center min-h-screen px-4">
                         <div class="bg-white rounded-lg shadow-xl max-w-md w-full transform scale-95 opacity-0 transition-all duration-300"
                              id="modalContent">
@@ -190,10 +190,10 @@
                             if (emptyState) emptyState.classList.remove('hidden');
                         }
 
-                        // Atualiza o texto do botão
+                        // Remover a atualização do texto do botão
                         const button = document.getElementById('ponto-btn');
                         if (button) {
-                            button.textContent = data.working ? 'Registrar Saída' : 'Registrar Entrada';
+                            button.textContent = 'Marcar Ponto';
                         }
                     }
                 })

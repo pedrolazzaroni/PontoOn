@@ -10,7 +10,14 @@ class Ponto extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'entrada', 'saida', 'horas_extras'];
+    protected $fillable = [
+        'user_id',
+        'entrada',
+        'saida',
+        'horas_trabalhadas',
+        'horas_extras',
+        'atraso',
+    ];
     protected $dates = ['entrada', 'saida'];
 
     protected function serializeDate(DateTimeInterface $date)

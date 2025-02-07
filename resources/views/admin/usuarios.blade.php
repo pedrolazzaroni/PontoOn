@@ -9,7 +9,7 @@
             <p class="text-gray-600">Gerencie os usuários da sua empresa</p>
         </div>
         <button id="openCreateModal"
-                class="bg-orange-400 text-white px-6 py-2 rounded-lg hover:bg-orange-400 transition-colors duration-200 flex items-center gap-2">
+                class="bg-orange-400 text-white px-6 py-2 rounded-lg hover:bg-orange-400 transition-colors duration-200 flex items-center gap-2 cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
@@ -27,12 +27,12 @@
                        value="{{ request('search') }}"
                        class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-300 outline-1">
                 <button type="submit"
-                        class="bg-orange-400 text-white px-3 rounded-lg hover:bg-orange-500 transition-all duration-200 ease-in-out hover:shadow-lg">
+                        class="bg-orange-400 text-white px-3 rounded-lg hover:bg-orange-500 transition-all duration-200 ease-in-out hover:shadow-lg cursor-pointer">
                     Pesquisar
                 </button>
                 <button type="button"
                         onclick="window.location.href='{{ route('admin.users') }}'"
-                        class="bg-gray-200 text-gray-800 px-3  rounded-lg hover:bg-gray-300 transition-all duration-200 ease-in-out hover:shadow-lg">
+                        class="bg-gray-200 text-gray-800 px-3  rounded-lg hover:bg-gray-300 transition-all duration-200 ease-in-out hover:shadow-lg cursor-pointer">
                     Limpar Filtros
                 </button>
             </div>
@@ -81,14 +81,14 @@
                     <td class="px-6 py-4 whitespace-nowrap text-center">
                         <div class="flex justify-center space-x-2">
                             <button onclick="openEditModal({{ $user->id }})"
-                                    class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-all duration-200 ease-in-out hover:shadow-md">
+                                    class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-all duration-200 ease-in-out hover:shadow-md cursor-pointer">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                 </svg>
                                 Editar
                             </button>
                             <button onclick="toggleUserStatus({{ $user->id }})"
-                                    class="inline-flex items-center px-3 py-1 {{ $user->status ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200' }} rounded-md transition-all duration-200 ease-in-out hover:shadow-md">
+                                    class="inline-flex items-center px-3 py-1 {{ $user->status ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200' }} rounded-md transition-all duration-200 ease-in-out hover:shadow-md cursor-pointer">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $user->status ? 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }}" />
                                 </svg>
@@ -104,7 +104,7 @@
 </div>
 
 <!-- Modal de Confirmação -->
-<div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+<div id="confirmationModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden  transition-opacity duration-300">
     <div class="flex items-center justify-center min-h-screen px-4">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Confirmar Ação</h3>

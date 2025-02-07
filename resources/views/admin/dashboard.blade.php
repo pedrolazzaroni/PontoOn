@@ -14,7 +14,7 @@
                 <div class="bg-white rounded-lg shadow-md p-4 w-48">
                     <h3 class="text-lg font-semibold text-orange-500 mb-2 text-center">Horas de Trabalho</h3>
                     <button onclick="openWorkingHoursModal()"
-                            class="inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm">
+                            class="inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm cursor-pointer">
                         Definir Expediente
                     </button>
                 </div>
@@ -238,9 +238,10 @@
     </div>
 
     <!-- Modal de Definição de Horas de Trabalho -->
-    <div id="workingHoursModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div id="workingHoursModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
         <div class="flex items-center justify-center min-h-screen px-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 transform scale-95 opacity-0 transition-all duration-300"
+                 id="workingHoursContent">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Definir Horas de Trabalho</h3>
                 <form id="workingHoursForm" method="POST" action="{{ route('admin.working-hours.update') }}">
                     @csrf
@@ -280,11 +281,25 @@
 <script>
 // Funções globais para o modal de expediente
 window.openWorkingHoursModal = function() {
-    document.getElementById('workingHoursModal').classList.remove('hidden');
+    const modal = document.getElementById('workingHoursModal');
+    const content = document.getElementById('workingHoursContent');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+    }, 10);
 };
 
 window.closeWorkingHoursModal = function() {
-    document.getElementById('workingHoursModal').classList.add('hidden');
+    const modal = document.getElementById('workingHoursModal');
+    const content = document.getElementById('workingHoursContent');
+    modal.classList.add('opacity-0');
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
 };
 
 document.addEventListener('DOMContentLoaded', function() {
