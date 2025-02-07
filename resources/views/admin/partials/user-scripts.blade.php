@@ -53,11 +53,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.error);
             }
 
-            document.getElementById('edit_name').value = data.name;
-            document.getElementById('edit_email').value = data.email;
-            document.getElementById('edit_password').value = ''; // Limpa o campo de senha
-            document.getElementById('editUserForm').action = `/admin/users/${userId}`;
-            editModal.classList.remove('hidden');
+            // Verificar se os elementos existem antes de definir os valores
+            const nameInput = document.getElementById('edit_name');
+            const emailInput = document.getElementById('edit_email');
+            const expedienteInput = document.getElementById('edit_expediente');
+            const passwordInput = document.getElementById('edit_password');
+            const form = document.getElementById('editUserForm');
+
+            if (nameInput) nameInput.value = data.name;
+            if (emailInput) emailInput.value = data.email;
+            if (expedienteInput) expedienteInput.value = data.expediente;
+            if (passwordInput) passwordInput.value = '';
+            if (form) form.action = `/admin/users/${userId}`;
+
+            // Mostrar o modal apenas se todos os campos necessários existirem
+            if (nameInput && emailInput && expedienteInput) {
+                editModal.classList.remove('hidden');
+            } else {
+                throw new Error('Elementos do formulário não encontrados');
+            }
         })
         .catch(error => {
             console.error('Erro:', error);

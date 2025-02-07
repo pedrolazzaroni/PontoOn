@@ -21,6 +21,7 @@ class User extends Authenticatable
         'password',
         'status',
         'responsavel_id',
+        'expediente'  // Adicionar este campo se ainda não estiver presente
     ];
 
     protected $hidden = [

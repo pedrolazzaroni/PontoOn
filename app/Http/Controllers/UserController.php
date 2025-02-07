@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -57,7 +58,8 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'status' => $user->status
+                'status' => $user->status,
+                'expediente' => $user->expediente
             ], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erro ao buscar dados do usuário'], 500);
@@ -73,21 +75,28 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8'
+            'password' => 'nullable|string|min:8',
+            'expediente' => 'required|integer|min:1|max:24'
         ]);
 
-        $dataToUpdate = [
-            'name' => $validated['name'],
-            'email' => $validated['email']
-        ];
+        try {
+            $dataToUpdate = [
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'expediente' => $validated['expediente']
+            ];
 
-        if (!empty($validated['password'])) {
-            $dataToUpdate['password'] = Hash::make($validated['password']);
+            if (!empty($validated['password'])) {
+                $dataToUpdate['password'] = Hash::make($validated['password']);
+            }
+
+            $user->update($dataToUpdate);
+
+            return redirect()->back()->with('success', 'Usuário atualizado com sucesso!');
+        } catch (\Exception $e) {
+            Log::error('Erro ao atualizar usuário:', ['error' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Erro ao atualizar usuário.');
         }
-
-        $user->update($dataToUpdate);
-
-        return redirect()->back()->with('success', 'Usuário atualizado com sucesso!');
     }
 
     public function toggleStatus(User $user)
