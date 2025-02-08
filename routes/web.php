@@ -8,6 +8,7 @@ use App\Http\Controllers\HistoricoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HoraExtraController; // Add this line
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RelatorioController; // Add this line
 
 // Página inicial (dashboard) - sem autenticação necessária
@@ -28,6 +29,8 @@ Route::middleware('guest')->group(function () {
 // Auth routes (logout)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 // Protect other routes with auth middleware

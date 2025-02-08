@@ -7,7 +7,7 @@
             @guest
                 <a href="{{ route('login') }}" class="text-white hover:bg-orange-300 px-2 py-1 rounded transition duration-300">Login</a>
             @else
-                <span class="text-white mr-4">{{ Auth::user()->name }}</span>
+                <a href="{{ route('profile') }}" class="text-white mr-4 hover:underline">{{ Auth::user()->name }}</a>
                 @if(Auth::user()->is_admin)
                     <a href="{{ route('admin.dashboard') }}"
                        class="text-gray-600 hover:text-orange-500 px-3 py-2 rounded-md text-sm font-medium">

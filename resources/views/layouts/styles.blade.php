@@ -10,5 +10,8 @@
         @apply border-orange-400;
         box-shadow: 0 0 5px rgba(251, 146, 60, 0.5);
         outline: 1px solid orange;
+        outline-color: #fb923c !important;
+        ring: 1px;
+        ring-color: #fed7aa;
     }
 </style>
