@@ -2,7 +2,7 @@
 @extends('layouts.header')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
     <!-- Toast Message -->
     <div id="toast" class="fixed top-4 right-4 z-50 hidden">
         <div class="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg">
@@ -13,34 +13,34 @@
     <!-- Flex Container para o card de Registro de Ponto -->
     <div class="flex flex-col">
         <!-- Card Principal (Registro de Ponto) -->
-        <div class="w-full bg-white rounded-xl shadow-lg p-8 mb-6">
+        <div class="w-full bg-white rounded-xl shadow-lg p-4 sm:p-8 mb-4 sm:mb-6">
             <!-- User Info Section -->
-            <div class="border-b border-gray-200 pb-6 mb-6">
-                <div class="flex items-center justify-between">
+            <div class="border-b border-gray-200 pb-4 sm:pb-6 mb-4 sm:mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                     <div>
-                        <h2 class="text-xl font-semibold text-orange-500">Bem-vindo</h2>
+                        <h2 class="text-lg sm:text-xl font-semibold text-orange-500">Bem-vindo</h2>
                     </div>
-                    <div class="text-right">
-                        <p class="text-sm text-gray-600">Data atual:</p>
-                        <p class="text-orange-400 font-medium">{{ now()->format('d/m/Y H:i') }}</p>
+                    <div class="text-left sm:text-right">
+                        <p class="text-xs sm:text-sm text-gray-600">Data atual:</p>
+                        <p class="text-orange-400 font-medium text-sm sm:text-base">{{ now()->format('d/m/Y H:i') }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Registro de Ponto -->
-            <div class="bg-orange-50 rounded-lg p-8 mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Registro de Ponto</h1>
-                <div class="text-center space-y-2">
-                    <div id="current-time" class="text-6xl font-bold text-orange-400"></div>
-                    <div id="current-date" class="text-2xl text-gray-600"></div>
+            <div class="bg-orange-50 rounded-lg p-4 sm:p-8 mb-4 sm:mb-8">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 text-center">Registro de Ponto</h1>
+                <div class="text-center space-y-1 sm:space-y-2">
+                    <div id="current-time" class="text-4xl sm:text-6xl font-bold text-orange-400"></div>
+                    <div id="current-date" class="text-lg sm:text-2xl text-gray-600"></div>
                 </div>
 
                 <!-- Action Section -->
-                <div class="flex justify-center mt-6">
+                <div class="flex justify-center mt-4 sm:mt-6">
                     <form id="ponto-form" method="POST" class="w-full max-w-md">
                         @csrf
                         <button type="submit" id="ponto-btn"
-                            class="w-full py-4 px-6 bg-orange-400 text-white text-lg font-semibold rounded-lg
+                            class="w-full py-3 sm:py-4 px-4 sm:px-6 bg-orange-400 text-white text-base sm:text-lg font-semibold rounded-lg
                                    hover:bg-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-200
                                    transition-all duration-300 transform hover:scale-105 shadow-lg">
                             Marcar Ponto
@@ -85,26 +85,37 @@
 
             <!-- Logs dos Últimos Usuários -->
             @if(Auth::check())
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-semibold text-orange-500 mb-4">Últimos Registros de Ponto</h2>
-                <div id="logs-container" class="overflow-x-auto">
-                    <table class="min-w-full">
-                        <thead class="bg-orange-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuário</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entrada</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saída</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tempo Total</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logs-table-body" class="bg-white divide-y divide-gray-200">
-                            <!-- Logs serão inseridos aqui via JavaScript -->
-                        </tbody>
-                    </table>
+            <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 overflow-x-auto">
+                <h2 class="text-xl sm:text-2xl font-semibold text-orange-500 mb-4">Últimos Registros de Ponto</h2>
+                <div class="min-w-full">
+                    <!-- Versão Mobile da Tabela (visible apenas em mobile) -->
+                    <div class="sm:hidden space-y-4">
+                        <div id="logs-cards" class="space-y-3">
+                            <!-- Cards serão inseridos aqui via JavaScript para mobile -->
+                        </div>
+                    </div>
+
+                    <!-- Versão Desktop da Tabela (hidden em mobile) -->
+                    <div class="hidden sm:block">
+                        <table class="min-w-full">
+                            <thead class="bg-orange-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuário</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entrada</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saída</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tempo Total</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Logs serão inseridos aqui via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
                     <!-- Estado vazio -->
-                    <div id="empty-state" class="hidden text-center py-8">
-                        <p class="text-gray-500">Nenhum registro de ponto encontrado.</p>
+                    <div id="empty-state" class="hidden text-center py-6 sm:py-8">
+                        <p class="text-gray-500 text-sm sm:text-base">Nenhum registro de ponto encontrado.</p>
                     </div>
                 </div>
             </div>
@@ -147,53 +158,62 @@
         function updateStatus() {
             @if(Auth::check())
             fetchWithAuth('/ponto/status')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
                     if (data && data.status === 'success') {
                         const tbody = document.getElementById('logs-table-body');
+                        const logsCards = document.getElementById('logs-cards');
                         const emptyState = document.getElementById('empty-state');
-                        const table = tbody ? tbody.closest('table') : null;
 
-                        if (tbody) {
-                            tbody.innerHTML = '';
-                        }
+                        // Limpar conteúdo existente
+                        if (tbody) tbody.innerHTML = '';
+                        if (logsCards) logsCards.innerHTML = '';
 
                         if (Array.isArray(data.logs) && data.logs.length > 0) {
-                            // Mostrar tabela e esconder estado vazio
-                            if (table) table.classList.remove('hidden');
                             if (emptyState) emptyState.classList.add('hidden');
 
                             data.logs.forEach(log => {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.user_name || 'N/A'}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.entrada || 'N/A'}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.saida || '-'}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.tempo_total || '-'}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                                            ${log.status === 'Entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                            ${log.status || 'N/A'}
-                                        </span>
-                                    </td>
-                                `;
-                                tbody.appendChild(row);
+                                // Versão Desktop
+                                if (tbody) {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.user_name || 'N/A'}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.entrada || 'N/A'}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.saida || '-'}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.tempo_total || '-'}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                ${log.status === 'Entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                                ${log.status || 'N/A'}
+                                            </span>
+                                        </td>
+                                    `;
+                                    tbody.appendChild(row);
+                                }
+
+                                // Versão Mobile (Cards)
+                                if (logsCards) {
+                                    const card = document.createElement('div');
+                                    card.className = 'bg-white p-4 rounded-lg shadow border border-gray-100';
+                                    card.innerHTML = `
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="font-medium text-gray-900">${log.user_name || 'N/A'}</span>
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-full
+                                                ${log.status === 'Entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                                ${log.status || 'N/A'}
+                                            </span>
+                                        </div>
+                                        <div class="space-y-1 text-sm">
+                                            <p class="text-gray-600">Entrada: ${log.entrada || 'N/A'}</p>
+                                            <p class="text-gray-600">Saída: ${log.saida || '-'}</p>
+                                            <p class="text-gray-600">Total: ${log.tempo_total || '-'}</p>
+                                        </div>
+                                    `;
+                                    logsCards.appendChild(card);
+                                }
                             });
                         } else {
-                            // Esconder tabela e mostrar estado vazio
-                            if (table) table.classList.add('hidden');
                             if (emptyState) emptyState.classList.remove('hidden');
-                        }
-
-                        // Remover a atualização do texto do botão
-                        const button = document.getElementById('ponto-btn');
-                        if (button) {
-                            button.textContent = 'Marcar Ponto';
                         }
                     }
                 })
