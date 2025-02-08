@@ -161,8 +161,16 @@
     </div>
 
     <!-- Lado Direito - Imagem -->
-    <div class="w-1/2 bg-gray-400 flex items-center justify-center">
-        <img src="{{asset('assets/images/pontoon.png')}}" alt="">
+    <div class="w-1/2 bg-gray-400 flex flex-col items-center justify-center gap-12">
+        <div class="flex items-center gap-6 bg-white px-12 py-8 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300">
+            <svg class="w-24 h-24 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div class="flex flex-col justify-center">
+                <span class="text-6xl font-bold text-orange-500 leading-none mb-2">PontoOn</span>
+                <span class="text-2xl text-orange-400 leading-none">Controle de Ponto</span>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -1,7 +1,13 @@
 <nav class="bg-orange-400 p-4 shadow">
     <div class="container mx-auto flex justify-between items-center">
-        <a href="{{ url('/') }}" class="text-white text-lg font-semibold">
-            {{ config('app.name', 'Laravel') }}
+        <a href="{{ url('/') }}" class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 group h-10">
+            <svg class="w-5 h-5 text-orange-500 group-hover:text-orange-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div class="flex flex-col justify-center">
+                <span class="text-sm font-bold text-orange-500 group-hover:text-orange-600 leading-none">PontoOn</span>
+                <span class="text-[10px] text-orange-400 group-hover:text-orange-500 leading-none">Controle de Ponto</span>
+            </div>
         </a>
         <div class="flex items-center space-x-4">
             @guest
