@@ -43,16 +43,15 @@
     }
 </style>
 
-<div class="min-h-screen flex relative">
+<div class="min-h-screen flex flex-col sm:flex-row relative">
     <!-- Lado Esquerdo - Formulário -->
-    <div class="w-1/2 bg-white flex items-center justify-center p-4 relative">
+    <div class="w-full sm:w-1/2 bg-white flex items-center justify-center p-4 relative min-h-screen sm:min-h-0">
         <div class="w-full max-w-md form-wrapper">
             <!-- Formulário de Login -->
-            <div id="login-form" class="form-container active">
-
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-orange-400">Bem-vindo de volta!</h2>
-                    <p class="text-gray-600 mt-2">Por favor, faça login na sua conta.</p>
+            <div id="login-form" class="form-container active px-4 sm:px-0">
+                <div class="mb-6 sm:mb-8 text-center sm:text-left">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-orange-400">Bem-vindo de volta!</h2>
+                    <p class="text-gray-600 mt-2 text-sm sm:text-base">Por favor, faça login na sua conta.</p>
                 </div>
 
                 <form method="POST" action="{{ route('login.submit') }}">  <!-- Atualizado para usar login.submit -->
@@ -88,68 +87,67 @@
             </div>
 
             <!-- Formulário de Registro -->
-            <div id="register-form" class="form-container">
-
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-orange-400">Criar Conta</h2>
-                    <p class="text-gray-600 mt-2">Preencha os dados para se registrar.</p>
+            <div id="register-form" class="form-container px-4 sm:px-0">
+                <div class="mb-4 sm:mb-8 text-center sm:text-left">
+                    <h2 class="text-xl sm:text-3xl font-bold text-orange-400">Criar Conta</h2>
+                    <p class="text-gray-600 mt-1 sm:mt-2 text-xs sm:text-base">Preencha os dados para se registrar.</p>
                 </div>
 
                 <form method="POST" action="{{ route('register') }}">
                     @csrf
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="mb-6">
-                            <label for="name" class="block text-gray-700 text-sm font-semibold mb-2">Nome Completo</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+                        <div class="mb-3 sm:mb-6">
+                            <label for="name" class="block text-gray-700 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">Nome Completo</label>
                             <input id="name" type="text"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
+                                class="input-focus-effect w-full py-2 sm:p-3 px-2 text-sm sm:text-base rounded-lg outline outline-gray-400 outline-1"
                                 name="name" required autofocus>
                         </div>
 
-                        <div class="mb-6">
-                            <label for="cpf" class="block text-gray-700 text-sm font-semibold mb-2">CPF</label>
+                        <div class="mb-3 sm:mb-6">
+                            <label for="cpf" class="block text-gray-700 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">CPF</label>
                             <input id="cpf" type="text"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
+                                class="input-focus-effect w-full py-2 sm:p-3 px-2 text-sm sm:text-base rounded-lg outline outline-gray-400 outline-1"
                                 name="cpf" required
                                 pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
                                 placeholder="000.000.000-00">
                         </div>
 
-                        <div class="mb-6">
-                            <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">E-mail</label>
+                        <div class="mb-3 sm:mb-6">
+                            <label for="email" class="block text-gray-700 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">E-mail</label>
                             <input id="email" type="email"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
+                                class="input-focus-effect w-full py-2 sm:p-3 px-2 text-sm sm:text-base rounded-lg outline outline-gray-400 outline-1"
                                 name="email" required>
                         </div>
 
-                        <div class="mb-6">
-                            <label for="nome_empresa" class="block text-gray-700 text-sm font-semibold mb-2">Nome da Empresa</label>
+                        <div class="mb-3 sm:mb-6">
+                            <label for="nome_empresa" class="block text-gray-700 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">Nome da Empresa</label>
                             <input id="nome_empresa" type="text"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
+                                class="input-focus-effect w-full py-2 sm:p-3 px-2 text-sm sm:text-base rounded-lg outline outline-gray-400 outline-1"
                                 name="nome_empresa" required>
                         </div>
 
-                        <div class="mb-6">
-                            <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">Senha</label>
+                        <div class="mb-3 sm:mb-6">
+                            <label for="password" class="block text-gray-700 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">Senha</label>
                             <input id="password" type="password"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
+                                class="input-focus-effect w-full py-2 sm:p-3 px-2 text-sm sm:text-base rounded-lg outline outline-gray-400 outline-1"
                                 name="password" required>
                         </div>
 
-                        <div class="mb-6">
-                            <label for="password-confirm" class="block text-gray-700 text-sm font-semibold mb-2">Confirmar Senha</label>
+                        <div class="mb-3 sm:mb-6">
+                            <label for="password-confirm" class="block text-gray-700 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">Confirmar Senha</label>
                             <input id="password-confirm" type="password"
-                                class="input-focus-effect w-full p-3 rounded-lg outline outline-gray-400 outline-1"
+                                class="input-focus-effect w-full py-2 sm:p-3 px-2 text-sm sm:text-base rounded-lg outline outline-gray-400 outline-1"
                                 name="password_confirmation" required>
                         </div>
                     </div>
 
                     <button type="submit"
-                        class="w-full bg-orange-400 text-white p-3 rounded-lg font-semibold
-                               hover:bg-orange-500 transition duration-200">
+                        class="w-full bg-orange-400 text-white py-2 sm:p-3 px-2 rounded-lg font-semibold text-sm sm:text-base
+                               hover:bg-orange-500 transition duration-200 mt-4 sm:mt-6">
                         Registrar
                     </button>
 
-                    <p class="mt-6 text-center text-sm text-gray-600">
+                    <p class="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-gray-600">
                         Já tem uma conta?
                         <a href="#" id="show-login" class="text-orange-400 hover:text-orange-500 font-semibold">
                             Faça login
@@ -160,15 +158,15 @@
         </div>
     </div>
 
-    <!-- Lado Direito - Imagem -->
-    <div class="w-1/2 bg-gray-400 flex flex-col items-center justify-center gap-12">
-        <div class="flex items-center gap-6 bg-white px-12 py-8 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300">
-            <svg class="w-24 h-24 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Lado Direito - Imagem e Logo -->
+    <div class="hidden sm:flex w-full sm:w-1/2 bg-gray-400 flex-col items-center justify-center gap-8 p-4">
+        <div class="flex items-center gap-4 sm:gap-6 bg-white px-6 sm:px-12 py-4 sm:py-8 rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl transform hover:scale-105 transition-all duration-300">
+            <svg class="w-16 sm:w-24 h-16 sm:h-24 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div class="flex flex-col justify-center">
-                <span class="text-6xl font-bold text-orange-500 leading-none mb-2">PontoOn</span>
-                <span class="text-2xl text-orange-400 leading-none">Controle de Ponto</span>
+                <span class="text-4xl sm:text-6xl font-bold text-orange-500 leading-none mb-2">PontoOn</span>
+                <span class="text-xl sm:text-2xl text-orange-400 leading-none">Controle de Ponto</span>
             </div>
         </div>
     </div>
