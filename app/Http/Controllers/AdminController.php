@@ -13,12 +13,10 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        // Busca usuários ativos vinculados ao responsável logado
         $users = User::where('responsavel_id', auth()->id())
                     ->where('status', true)
                     ->get();
 
-        // Calcula média de horas apenas para usuários ativos
         $avgWorkingHours = $users->avg('expediente') ?? 8;
 
         $recentPoints = Ponto::with('user')
@@ -30,7 +28,6 @@ class AdminController extends Controller
             ->take(4)
             ->get();
 
-        // Updated overtime query
         $overtimeUsers = Ponto::with('user')
             ->whereHas('user', function($query) {
                 $query->where('responsavel_id', auth()->id())
@@ -66,13 +63,11 @@ class AdminController extends Controller
             }
         });
 
-        // Debug para verificar os usuários
         \Log::info('Usuários carregados:', ['count' => $users->count(), 'users' => $users->toArray()]);
 
         return view('admin.dashboard', compact('users', 'recentPoints', 'overtimeUsers', 'lateUsers', 'avgWorkingHours'));
     }
 
-    // Add new method for updating working hours
     public function updateWorkingHours(Request $request)
     {
         $request->validate([
@@ -80,7 +75,6 @@ class AdminController extends Controller
         ]);
 
         try {
-            // Atualiza o expediente para todos os usuários vinculados ao responsável
             User::where('responsavel_id', auth()->id())
                 ->update(['expediente' => $request->expediente]);
 
@@ -101,7 +95,6 @@ class AdminController extends Controller
             ->with('pontos')
             ->paginate(10);
 
-        // Calculate total late time for each user
         $users->getCollection()->transform(function($user) {
             $lateSeconds = 0;
             foreach ($user->pontos as $ponto) {
@@ -117,5 +110,4 @@ class AdminController extends Controller
         return view('admin.hora-atraso', compact('users'));
     }
 
-    // Remove the relatorio method as it's now in RelatorioController
 }

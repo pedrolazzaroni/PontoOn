@@ -10,11 +10,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Inicializar variáveis com valores padrão
         $activeUsersCount = 0;
         $todayPointsCount = 0;
 
-        // Se o usuário estiver autenticado, buscar as contagens
         if (Auth::check()) {
             $activeUsersCount = User::where('responsavel_id', Auth::id())
                 ->where('status', true)
