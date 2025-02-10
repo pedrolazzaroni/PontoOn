@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class HoraExtraController extends Controller
@@ -17,11 +18,11 @@ class HoraExtraController extends Controller
             }])
             ->paginate(10);
 
-        // Calculate total overtime for each user
+        // Calcula total de horas extras considerando o formato HH:MM:SS
         $users->getCollection()->transform(function($user) {
             $user->total_horas_extras = $user->pontos->sum(function($ponto) {
                 list($hours, $minutes, $seconds) = explode(':', $ponto->horas_extras);
-                return $hours + ($minutes/60) + ($seconds/3600);
+                return number_format($hours + ($minutes/60) + ($seconds/3600), 2);
             });
             return $user;
         });

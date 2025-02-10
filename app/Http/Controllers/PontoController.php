@@ -47,7 +47,7 @@ class PontoController extends Controller
                 ], 403);
             }
 
-            $now = now()->setTimezone('America/Sao_Paulo');
+            $now = Carbon::now('America/Sao_Paulo');
 
             // Buscar último registro
             $lastPonto = Ponto::where('user_id', $user->id)
@@ -60,28 +60,27 @@ class PontoController extends Controller
                 if ($lastPonto) {
                     $lastPonto->saida = $now;
 
-                    // Calculate total worked seconds and format as HH:MM:SS
-                    $entrada = Carbon::parse($lastPonto->entrada);
+                    // Calcula tempo total trabalhado
+                    $entrada = Carbon::parse($lastPonto->entrada)->setTimezone('America/Sao_Paulo');
                     $segundosTrabalhados = $entrada->diffInSeconds($now);
-                    $horasExtras = sprintf(
-                        "%02d:%02d:%02d",
-                        floor($segundosTrabalhados / 3600),
-                        floor(($segundosTrabalhados % 3600) / 60),
-                        $segundosTrabalhados % 60
-                    );
 
-                    // Calculate overtime based on user's expediente
-                    $expedienteInSeconds = $user->expediente * 3600;
-                    if ($segundosTrabalhados > $expedienteInSeconds) {
-                        $extraSeconds = $segundosTrabalhados - $expedienteInSeconds;
-                        $extraH = floor($extraSeconds / 3600);
-                        $extraM = floor(($extraSeconds % 3600) / 60);
-                        $extraS = $extraSeconds % 60;
-                        $horasExtras = sprintf('%02d:%02d:%02d', $extraH, $extraM, $extraS);
+                    // Converte expediente de horas para segundos
+                    $expedienteEmSegundos = $user->expediente * 3600;
+
+                    // Calcula horas extras (se houver)
+                    if ($segundosTrabalhados > $expedienteEmSegundos) {
+                        $segundosExtras = $segundosTrabalhados - $expedienteEmSegundos;
+                        $horasExtras = sprintf(
+                            "%02d:%02d:%02d",
+                            floor($segundosExtras / 3600),
+                            floor(($segundosExtras % 3600) / 60),
+                            $segundosExtras % 60
+                        );
+                    } else {
+                        $horasExtras = "00:00:00";
                     }
 
                     $lastPonto->horas_extras = $horasExtras;
-
                     $lastPonto->save();
 
                     $tempoTrabalhado = $this->calcularTempoTrabalhado($lastPonto->entrada, $now);
@@ -128,22 +127,13 @@ class PontoController extends Controller
 
     private function calcularTempoTrabalhado($entrada, $saida)
     {
-        $diffInSeconds = Carbon::parse($entrada)->diffInSeconds($saida);
+        $entrada = Carbon::parse($entrada)->setTimezone('America/Sao_Paulo');
+        $saida = Carbon::parse($saida)->setTimezone('America/Sao_Paulo');
+        $diffInSeconds = $entrada->diffInSeconds($saida);
         $hours = floor($diffInSeconds / 3600);
         $minutes = floor(($diffInSeconds % 3600) / 60);
         $seconds = $diffInSeconds % 60;
         return sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
-    }
-
-    // Update to use the user's expediente value
-    private function calcularHoraExtra($entrada, $saida, $expediente)
-    {
-        $diffInSeconds = Carbon::parse($entrada)->diffInSeconds($saida);
-        $totalHours = $diffInSeconds / 3600;
-
-        $extraHours = $totalHours > $expediente ? $totalHours - $expediente : 0;
-
-        return round($extraHours, 2);
     }
 
     public function status()

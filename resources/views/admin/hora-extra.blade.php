@@ -73,8 +73,8 @@
                                         <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm transform translate-y-4 opacity-0 transition-all duration-300"
                                              id="record-{{ $user->id }}-{{ $loop->index }}">
                                             <div>
-                                                <div class="text-sm text-gray-900">{{ $ponto->created_at->format('d/m/Y') }}</div>
-                                                <div class="text-xs text-gray-500">{{ $ponto->created_at->format('H:i') }}</div>
+                                                <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($ponto->entrada)->format('d/m/Y') }}</div>
+                                                <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($ponto->entrada)->format('H:i') }}</div>
                                             </div>
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
                                                 +{{ $ponto->horas_extras }}
