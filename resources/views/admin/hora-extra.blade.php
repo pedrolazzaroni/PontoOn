@@ -7,7 +7,7 @@
         <h1 class="text-3xl font-bold text-orange-600">Horas Extras dos Usuários</h1>
         <div class="flex space-x-2">
             <span class="px-4 py-2 bg-orange-100 text-orange-600 rounded-lg text-sm font-medium">
-                Total de Registros: {{ $users->sum(function($user) { return $user->pontos->count(); }) }}
+                Total de Registros: {{ $totalRecords }}
             </span>
         </div>
     </div>
@@ -47,7 +47,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                    {{ number_format($user->total_horas_extras, 2) }} horas
+                                    {{ $user->total_horas_extras }} horas
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-center">
@@ -73,8 +73,11 @@
                                         <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm transform translate-y-4 opacity-0 transition-all duration-300"
                                              id="record-{{ $user->id }}-{{ $loop->index }}">
                                             <div>
-                                                <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($ponto->entrada)->format('d/m/Y') }}</div>
-                                                <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($ponto->entrada)->format('H:i') }}</div>
+                                                <div class="text-sm text-gray-900">{{ $ponto->data_formatada }}</div>
+                                                <div class="text-xs text-gray-500">Entrada: {{ $ponto->hora_entrada_formatada }}</div>
+                                                @if($ponto->hora_saida_formatada)
+                                                <div class="text-xs text-gray-500">Saída: {{ $ponto->hora_saida_formatada }}</div>
+                                                @endif
                                             </div>
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
                                                 +{{ $ponto->horas_extras }}
@@ -90,7 +93,8 @@
                 </tbody>
             </table>
 
-            @if($users->sum('total_horas_extras') == 0)
+            <!-- Empty state check -->
+            @if($totalRecords == 0)
             <div class="text-center py-8">
                 <div class="text-gray-400 text-lg">Nenhum registro de hora extra encontrado</div>
             </div>
