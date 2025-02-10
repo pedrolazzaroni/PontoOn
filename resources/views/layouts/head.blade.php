@@ -7,7 +7,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     <link rel="stylesheet" href="{{ asset('css/app.css')}}">
     <link rel="shortcut icon" href="{{asset('favicon.ico')}}" type="image/x-icon">
-    @vite('resources/css/app.css')
+    {{-- @vite('resources/css/app.css') --}}
     {{-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> --}}
     @include('layouts.styles')
 </head>
