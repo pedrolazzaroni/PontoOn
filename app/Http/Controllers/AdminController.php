@@ -24,7 +24,7 @@ class AdminController extends Controller
                 $query->where('responsavel_id', auth()->id())
                       ->where('status', true);
             })
-            ->latest()
+            ->orderBy('entrada', 'desc')
             ->take(4)
             ->get();
 

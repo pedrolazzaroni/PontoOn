@@ -67,12 +67,27 @@
                 <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
                     <div>
                         <p class="font-semibold text-gray-800">{{ $point->user->name }}</p>
-                        <p class="text-sm text-gray-600">{{ \Carbon\Carbon::parse($point->entrada)->format('H:i:s d/m/Y') }}</p>
+                        <p class="text-sm text-gray-600">
+                            {{ \Carbon\Carbon::parse($point->entrada)->format('H:i:s d/m/Y') }}
+                        </p>
                     </div>
-                    <span class="px-2 py-1 text-xs rounded-full {{ $point->type === 'entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                        {{ ucfirst($point->type) }}
+                    <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                        Entrada
                     </span>
                 </div>
+                    @if($point->saida)
+                    <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg mt-2">
+                        <div>
+                            <p class="font-semibold text-gray-800">{{ $point->user->name }}</p>
+                            <p class="text-sm text-gray-600">
+                                {{ \Carbon\Carbon::parse($point->saida)->format('H:i:s d/m/Y') }}
+                            </p>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">
+                            Saída
+                        </span>
+                    </div>
+                    @endif
                 @endforeach
             </div>
 
