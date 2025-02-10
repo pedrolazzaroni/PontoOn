@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/hora-atraso', [AdminController::class, 'lateHours'])->name('admin.hora-atraso');
     Route::get('/admin/relatorio', [RelatorioController::class, 'index'])->name('admin.relatorio'); // Updated route
     Route::get('/admin/relatorio/dados', [RelatorioController::class, 'relatorioData'])->name('admin.relatorio.dados'); // New route
+    Route::get('/admin/relatorio/pdf', [RelatorioController::class, 'downloadPDF'])->name('admin.relatorio.pdf'); // New route
 
     // Rotas de usuários
     Route::get('/admin/usuarios', [UserController::class, 'index'])->name('admin.users');
