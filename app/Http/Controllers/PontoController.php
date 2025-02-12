@@ -47,7 +47,7 @@ class PontoController extends Controller
                 ], 403);
             }
 
-            $now = Carbon::now('America/Sao_Paulo');
+            $now = now();
 
             // Buscar último registro
             $lastPonto = Ponto::where('user_id', $user->id)
@@ -61,7 +61,7 @@ class PontoController extends Controller
                     $lastPonto->saida = $now;
 
                     // Calcula tempo total trabalhado
-                    $entrada = Carbon::parse($lastPonto->entrada)->setTimezone('America/Sao_Paulo');
+                    $entrada = Carbon::parse($lastPonto->entrada);
                     $segundosTrabalhados = $entrada->diffInSeconds($now);
 
                     // Converte expediente de horas para segundos
@@ -127,8 +127,8 @@ class PontoController extends Controller
 
     private function calcularTempoTrabalhado($entrada, $saida)
     {
-        $entrada = Carbon::parse($entrada)->setTimezone('America/Sao_Paulo');
-        $saida = Carbon::parse($saida)->setTimezone('America/Sao_Paulo');
+        $entrada = Carbon::parse($entrada);
+        $saida = Carbon::parse($saida);
         $diffInSeconds = $entrada->diffInSeconds($saida);
         $hours = floor($diffInSeconds / 3600);
         $minutes = floor(($diffInSeconds % 3600) / 60);
