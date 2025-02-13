@@ -76,18 +76,28 @@ class AdminController extends Controller
     {
         $users = User::where('responsavel_id', auth()->id())
             ->where('status', true)
-            ->with('pontos')
+            ->with(['pontos' => function($query) {
+                $query->whereNotNull('atraso')
+                      ->where('atraso', '>', '00:00:00')
+                      ->orderBy('created_at', 'desc');
+            }])
             ->paginate(10);
 
         $users->getCollection()->transform(function($user) {
-            $lateSeconds = 0;
+            // Calcular atraso total
+            $totalLateSeconds = 0;
             foreach ($user->pontos as $ponto) {
-                $scheduledStart = Carbon::parse($ponto->created_at->format('Y-m-d') . ' 09:00:00');
-                if ($ponto->entrada && Carbon::parse($ponto->entrada)->greaterThan($scheduledStart)) {
-                    $lateSeconds += $scheduledStart->diffInSeconds(Carbon::parse($ponto->entrada));
-                }
+                list($hours, $minutes, $seconds) = explode(':', $ponto->atraso);
+                $totalLateSeconds += ($hours * 3600) + ($minutes * 60) + $seconds;
             }
-            $user->late_hours = gmdate('H:i:s', $lateSeconds);
+
+            $user->total_late_hours = sprintf(
+                "%02d:%02d:%02d",
+                floor($totalLateSeconds / 3600),
+                floor(($totalLateSeconds % 3600) / 60),
+                $totalLateSeconds % 60
+            );
+
             return $user;
         });
 
