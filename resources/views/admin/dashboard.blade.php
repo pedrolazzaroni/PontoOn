@@ -135,16 +135,16 @@
             </div>
 
             <div class="space-y-4">
-                @foreach($lateUsers as $late)
+                @foreach($lateUsers as $ponto)
                 <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
                     <div>
-                        <p class="font-semibold text-gray-800">{{ $late->user->name }}</p>
+                        <p class="font-semibold text-gray-800">{{ $ponto->user->name }}</p>
                         <p class="text-sm text-gray-600">
-                            {{ optional($late->entrada)->format('d/m/Y') ?? '---' }}
+                            {{ Carbon\Carbon::parse($ponto->entrada)->format('d/m/Y') }}
                         </p>
                     </div>
                     <span class="text-red-500 font-medium">
-                        Atraso: {{ $late->late_hours }}
+                        {{ $ponto->atraso }}
                     </span>
                 </div>
                 @endforeach
