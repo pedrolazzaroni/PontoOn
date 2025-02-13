@@ -8,8 +8,14 @@
             font-family: sans-serif;
             padding: 20px;
         }
-        .page-break {
-            page-break-after: always;
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f97316;
+            padding-bottom: 15px;
+        }
+        h1 {
+            color: #f97316;
+            margin-bottom: 10px;
         }
         .stats-grid {
             display: grid;
@@ -22,19 +28,6 @@
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 10px;
-        }
-        .chart-container {
-            margin: 30px 0;
-            page-break-inside: avoid;
-        }
-        h1 {
-            color: #f97316;
-            margin-bottom: 10px;
-        }
-        .header {
-            margin-bottom: 30px;
-            border-bottom: 2px solid #f97316;
-            padding-bottom: 15px;
         }
         .stat-label {
             color: #666;
@@ -55,24 +48,6 @@
             font-size: 12px;
             color: #666;
         }
-        .chart-image {
-            width: 100%;
-            max-width: 800px;
-            margin: 20px 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f8f9fa;
-        }
     </style>
 </head>
 <body>
@@ -85,19 +60,19 @@
     <div class="stats-grid">
         <div class="stat-box">
             <div class="stat-label">Média de Horas/Dia</div>
-            <div class="stat-value orange">{{ $stats['mediaHoras'] }}h</div>
+            <div class="stat-value orange">{{ $stats['mediaHoras'] }}</div>
         </div>
         <div class="stat-box">
             <div class="stat-label">Total de Horas</div>
-            <div class="stat-value blue">{{ $stats['horasTotais'] }}h</div>
+            <div class="stat-value blue">{{ $stats['horasTotais'] }}</div>
         </div>
         <div class="stat-box">
             <div class="stat-label">Total Horas Extras</div>
-            <div class="stat-value green">{{ $stats['totalHorasExtras'] }}h</div>
+            <div class="stat-value green">{{ $stats['totalHorasExtras'] }}</div>
         </div>
         <div class="stat-box">
             <div class="stat-label">Total Atrasos</div>
-            <div class="stat-value red">{{ $stats['totalAtrasos'] }}h</div>
+            <div class="stat-value red">{{ $stats['totalAtrasos'] }}</div>
         </div>
         <div class="stat-box">
             <div class="stat-label">Total de Registros</div>
@@ -110,53 +85,12 @@
         </div>
         <div class="stat-box">
             <div class="stat-label">Máximo de Horas/Dia</div>
-            <div class="stat-value green">{{ $stats['maxHoras'] }}h</div>
+            <div class="stat-value green">{{ $stats['maxHoras'] }}</div>
         </div>
         <div class="stat-box">
             <div class="stat-label">Mínimo de Horas/Dia</div>
-            <div class="stat-value yellow">{{ $stats['minHoras'] }}h</div>
+            <div class="stat-value yellow">{{ $stats['minHoras'] }}</div>
         </div>
-    </div>
-
-    <div class="page-break"></div>
-
-    <!-- Tabela de dados -->
-    <h2>Detalhamento por Dia</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Horas Trabalhadas</th>
-                <th>Horas Extras</th>
-                <th>Atrasos</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($dates as $index => $date)
-                <tr>
-                    <td>{{ $date }}</td>
-                    <td>{{ $workingHours[$index] }}h</td>
-                    <td>{{ $overtime[$index] }}h</td>
-                    <td>{{ $late[$index] }}h</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <!-- Gráficos usando Google Image Charts -->
-    <div class="chart-container">
-        <h2>Horas Trabalhadas</h2>
-        <img src="{{ $workingHoursChart }}" class="chart-image" alt="Horas Trabalhadas">
-    </div>
-
-    <div class="chart-container">
-        <h2>Horas Extras</h2>
-        <img src="{{ $overtimeChart }}" class="chart-image" alt="Horas Extras">
-    </div>
-
-    <div class="chart-container">
-        <h2>Atrasos</h2>
-        <img src="{{ $lateChart }}" class="chart-image" alt="Atrasos">
     </div>
 </body>
 </html>

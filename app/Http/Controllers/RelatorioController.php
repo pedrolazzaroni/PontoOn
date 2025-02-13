@@ -197,69 +197,17 @@ class RelatorioController extends Controller
             ? User::find($request->user_id)->name
             : 'Todos os funcionários';
 
-        // Converter as Collections para arrays
-        $dates = $data['dates']->toArray();
-        $workingHours = $data['workingHours'];
-        $overtime = $data['overtime'];
-        $late = $data['late'];
-
-        // Gerar URLs dos gráficos usando Google Image Charts
-        $workingHoursChart = 'https://chart.googleapis.com/chart?' . http_build_query([
-            'cht' => 'lc', // line chart
-            'chs' => '800x400',
-            'chd' => 't:' . implode(',', $workingHours),
-            'chl' => implode('|', $dates),
-            'chtt' => 'Horas Trabalhadas',
-            'chco' => 'f97316', // cor laranja
-            'chxt' => 'x,y',
-            'chxl' => '0:|' . implode('|', $dates),
-            'chf' => 'bg,s,FFFFFF00'
-        ]);
-
-        $overtimeChart = 'https://chart.googleapis.com/chart?' . http_build_query([
-            'cht' => 'bvs', // bar chart
-            'chs' => '800x400',
-            'chd' => 't:' . implode(',', $overtime),
-            'chl' => implode('|', $dates),
-            'chtt' => 'Horas Extras',
-            'chco' => 'f97316',
-            'chxt' => 'x,y',
-            'chxl' => '0:|' . implode('|', $dates),
-            'chf' => 'bg,s,FFFFFF00'
-        ]);
-
-        $lateChart = 'https://chart.googleapis.com/chart?' . http_build_query([
-            'cht' => 'bvs',
-            'chs' => '800x400',
-            'chd' => 't:' . implode(',', $late),
-            'chl' => implode('|', $dates),
-            'chtt' => 'Atrasos',
-            'chco' => 'ef4444', // cor vermelha
-            'chxt' => 'x,y',
-            'chxl' => '0:|' . implode('|', $dates),
-            'chf' => 'bg,s,FFFFFF00'
-        ]);
-
         $pdf = FacadePdf::loadView('admin.pdf.relatorio', [
             'stats' => $data['stats'],
             'userName' => $userName,
-            'dates' => $data['dates'],
-            'workingHours' => $data['workingHours'],
-            'overtime' => $data['overtime'],
-            'late' => $data['late'],
             'startDate' => $request->start_date,
             'endDate' => $request->end_date,
-            'workingHoursChart' => $workingHoursChart,
-            'overtimeChart' => $overtimeChart,
-            'lateChart' => $lateChart
         ]);
 
         // Configurar o PDF
         $pdf->setOption([
             'enable-smart-shrinking' => true,
             'enable-remote' => true,
-            'images' => true,
-            'isRemoteEnabled' => true
         ]);
 
         return $pdf->download('relatorio-' . now()->format('Y-m-d') . '.pdf');
