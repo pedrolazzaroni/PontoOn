@@ -64,7 +64,7 @@ class RelatorioController extends Controller
             $totalLateSeconds += $dayStats['lateSeconds'];
             $totalEntries += $dayStats['entries'];
 
-            // Dados para gráficos
+            // Dados para gráficos - mantendo o formato decimal para os gráficos
             $workingHours[] = round($dayStats['seconds'] / 3600, 2);
             $overtime[] = round($dayStats['overtimeSeconds'] / 3600, 2);
             $late[] = round($dayStats['lateSeconds'] / 3600, 2);
@@ -105,18 +105,31 @@ class RelatorioController extends Controller
         return $stats;
     }
 
+    protected function decimalToHours($decimal)
+    {
+        $hours = floor($decimal);
+        $minutes = round(($decimal - $hours) * 60);
+
+        if ($minutes == 60) {
+            $hours++;
+            $minutes = 0;
+        }
+
+        return sprintf("%02d:%02d", $hours, $minutes);
+    }
+
     protected function calculateStats($totalSeconds, $totalOvertimeSeconds, $totalLateSeconds, $daysPresent, $totalEntries, $maxSeconds, $minSeconds)
     {
         return [
-            'mediaHoras' => $daysPresent ? round($totalSeconds / ($daysPresent * 3600), 2) : 0,
-            'totalHorasExtras' => round($totalOvertimeSeconds / 3600, 2),
-            'totalAtrasos' => round($totalLateSeconds / 3600, 2),
+            'mediaHoras' => $this->decimalToHours($daysPresent ? $totalSeconds / ($daysPresent * 3600) : 0),
+            'totalHorasExtras' => $this->decimalToHours($totalOvertimeSeconds / 3600),
+            'totalAtrasos' => $this->decimalToHours($totalLateSeconds / 3600),
             'diasTrabalhados' => $daysPresent,
-            'maxHoras' => round($maxSeconds / 3600, 2),
-            'minHoras' => $daysPresent ? round($minSeconds / 3600, 2) : 0,
+            'maxHoras' => $this->decimalToHours($maxSeconds / 3600),
+            'minHoras' => $daysPresent ? $this->decimalToHours($minSeconds / 3600) : '00:00',
             'totalRegistros' => $totalEntries,
             'mediaRegistrosDia' => $daysPresent ? round($totalEntries / $daysPresent, 1) : 0,
-            'horasTotais' => round($totalSeconds / 3600, 2),
+            'horasTotais' => $this->decimalToHours($totalSeconds / 3600),
         ];
     }
 
