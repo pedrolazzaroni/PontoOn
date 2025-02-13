@@ -7,6 +7,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     <link rel="stylesheet" href="{{ asset('css/app.css')}}">
     <link rel="shortcut icon" href="{{asset('favicon.ico')}}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     {{-- @vite('resources/css/app.css') --}}
     {{-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> --}}
     @include('layouts.styles')

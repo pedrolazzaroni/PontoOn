@@ -13,19 +13,14 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $users = User::where('responsavel_id', auth()->id())
-                    ->where('status', true)
-                    ->get();
+        $users = User::where('responsavel_id', auth()->id())->get();
 
         $avgWorkingHours = $users->avg('expediente') ?? 8;
 
         $recentPoints = Ponto::with('user')
-            ->whereHas('user', function($query) {
-                $query->where('responsavel_id', auth()->id())
-                      ->where('status', true);
-            })
+            ->whereIn('user_id', $users->pluck('id'))
             ->orderBy('entrada', 'desc')
-            ->take(4)
+            ->limit(4)
             ->get();
 
         $overtimeUsers = Ponto::with('user')

@@ -59,35 +59,36 @@
         <div class="bg-white rounded-lg shadow-md p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold text-gray-800">Histórico de Pontos</h2>
-                <span class="text-sm text-gray-500">Últimos registros</span>
+                <span class="text-sm text-gray-500">Últimos 4 registros</span>
             </div>
 
-            <div class="space-y-4">
-                @foreach($recentPoints as $point)
-                <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
-                    <div>
+            <div class="space-y-3">
+                @foreach($recentPoints->take(4) as $point)
+                <div class="bg-orange-50 rounded-lg p-3">
+                    <div class="flex justify-between items-center mb-2">
                         <p class="font-semibold text-gray-800">{{ $point->user->name }}</p>
-                        <p class="text-sm text-gray-600">
-                            {{ \Carbon\Carbon::parse($point->entrada)->format('H:i:s d/m/Y') }}
-                        </p>
+                        <p class="text-sm text-gray-600">{{ \Carbon\Carbon::parse($point->entrada)->format('d/m/Y') }}</p>
                     </div>
-                    <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                        Entrada
-                    </span>
-                </div>
-                    @if($point->saida)
-                    <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg mt-2">
-                        <div>
-                            <p class="font-semibold text-gray-800">{{ $point->user->name }}</p>
-                            <p class="text-sm text-gray-600">
-                                {{ \Carbon\Carbon::parse($point->saida)->format('H:i:s d/m/Y') }}
-                            </p>
+                    <div class="flex justify-between items-center text-sm">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Entrada</span>
+                            <span class="text-gray-600">{{ \Carbon\Carbon::parse($point->entrada)->format('H:i:s') }}</span>
                         </div>
-                        <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">
-                            Saída
+                        @if($point->saida)
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Saída</span>
+                            <span class="text-gray-600">{{ \Carbon\Carbon::parse($point->saida)->format('H:i:s') }}</span>
+                        </div>
+                        @endif
+                    </div>
+                    @if($point->saida)
+                    <div class="mt-2 text-right">
+                        <span class="text-xs text-gray-500">
+                            Total: {{ $point->horas_trabalhadas ?? '-' }}
                         </span>
                     </div>
                     @endif
+                </div>
                 @endforeach
             </div>
 

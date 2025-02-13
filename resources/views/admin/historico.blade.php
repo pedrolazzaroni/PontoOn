@@ -70,42 +70,76 @@
                                      style="max-height: 0; overflow: hidden;">
                                     <div class="space-y-3 p-4">
                                         @foreach($user->pontos->sortByDesc('created_at') as $ponto)
-                                        <div class="flex flex-col space-y-2 p-3 bg-white rounded-lg shadow-sm transform translate-y-4 opacity-0 transition-all duration-300"
+                                        <div class="bg-white rounded-lg shadow-sm p-4 transform translate-y-4 opacity-0 transition-all duration-300"
                                              id="record-{{ $user->id }}-{{ $loop->index }}">
-                                            <div class="text-sm font-medium text-gray-900">
-                                                {{ $ponto->created_at->format('d/m/Y') }}
+                                            <!-- Cabeçalho do registro -->
+                                            <div class="flex justify-between items-center mb-3">
+                                                <span class="font-medium text-gray-900">
+                                                    {{ $ponto->created_at->format('d/m/Y') }}
+                                                </span>
+                                                <span class="text-xs px-2 py-1 bg-orange-100 text-orange-600 rounded-full">
+                                                    {{ $ponto->saida ? 'Completo' : 'Em andamento' }}
+                                                </span>
                                             </div>
-                                            <div class="grid grid-cols-2 gap-4">
-                                                <!-- Entrada -->
-                                                <div class="bg-green-50 p-3 rounded-lg">
-                                                    <div class="flex items-center justify-between">
-                                                        <span class="text-xs font-semibold text-green-800 bg-green-100 px-2 py-1 rounded-full">
-                                                            Entrada
-                                                        </span>
-                                                        <span class="text-sm text-green-800">
+
+                                            <!-- Registro de ponto -->
+                                            <div class="bg-orange-50 rounded-lg p-3">
+                                                <!-- Horários -->
+                                                <div class="flex items-center justify-between space-x-4">
+                                                    <!-- Entrada -->
+                                                    <div class="flex-1">
+                                                        <div class="flex items-center space-x-2">
+                                                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                                            <span class="text-xs font-medium text-gray-600">Entrada</span>
+                                                        </div>
+                                                        <span class="text-sm font-semibold text-gray-800 ml-4">
                                                             {{ $ponto->entrada ? \Carbon\Carbon::parse($ponto->entrada)->format('H:i:s') : '-' }}
                                                         </span>
                                                     </div>
-                                                </div>
-                                                <!-- Saída -->
-                                                <div class="bg-red-50 p-3 rounded-lg">
-                                                    <div class="flex items-center justify-between">
-                                                        <span class="text-xs font-semibold text-red-800 bg-red-100 px-2 py-1 rounded-full">
-                                                            Saída
-                                                        </span>
-                                                        <span class="text-sm text-red-800">
+
+                                                    <!-- Seta indicativa -->
+                                                    <div class="text-gray-400">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                                        </svg>
+                                                    </div>
+
+                                                    <!-- Saída -->
+                                                    <div class="flex-1 text-right">
+                                                        <div class="flex items-center justify-end space-x-2">
+                                                            <span class="text-xs font-medium text-gray-600">Saída</span>
+                                                            <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                                        </div>
+                                                        <span class="text-sm font-semibold text-gray-800 mr-4">
                                                             {{ $ponto->saida ? \Carbon\Carbon::parse($ponto->saida)->format('H:i:s') : '-' }}
                                                         </span>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            @if($ponto->saida)
-                                                <div class="flex justify-end mt-2">
-                                                    <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                                                        Total: {{ \Carbon\Carbon::parse($ponto->entrada)->diff(\Carbon\Carbon::parse($ponto->saida))->format('%H:%I:%S') }}
-                                                    </span>
+
+                                                <!-- Informações adicionais -->
+                                                @if($ponto->saida)
+                                                <div class="mt-3 pt-3 border-t border-orange-100 flex justify-between items-center">
+                                                    <div class="flex space-x-4">
+                                                        <span class="text-xs text-gray-600">
+                                                            <i class="fas fa-clock mr-1"></i>
+                                                            Total: {{ $ponto->horas_trabalhadas }}
+                                                        </span>
+                                                        @if($ponto->horas_extras != '00:00:00')
+                                                        <span class="text-xs text-green-600">
+                                                            <i class="fas fa-plus-circle mr-1"></i>
+                                                            Extras: {{ $ponto->horas_extras }}
+                                                        </span>
+                                                        @endif
+                                                        @if($ponto->atraso != '00:00:00')
+                                                        <span class="text-xs text-red-600">
+                                                            <i class="fas fa-minus-circle mr-1"></i>
+                                                            Atraso: {{ $ponto->atraso }}
+                                                        </span>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                            @endif
+                                                @endif
+                                            </div>
                                         </div>
                                         @endforeach
                                     </div>
