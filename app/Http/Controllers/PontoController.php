@@ -49,51 +49,58 @@ class PontoController extends Controller
 
             $now = now();
 
-            // Buscar último registro
-            $lastPonto = Ponto::where('user_id', $user->id)
-                ->whereNull('saida')
-                ->latest('entrada')
-                ->first();
-
             DB::beginTransaction();
             try {
-                if ($lastPonto) {
-                    $lastPonto->saida = $now;
+                // Buscar registro do dia atual
+                $registroDia = Ponto::where('user_id', $user->id)
+                    ->whereDate('entrada', $now->format('Y-m-d'))
+                    ->first();
 
-                    // Calcula tempo do ponto atual
-                    $entrada = Carbon::parse($lastPonto->entrada);
-                    $segundosTrabalhados = $entrada->diffInSeconds($now);
-
-                    // Calcula tempo total trabalhado no dia
-                    $segundosTotaisNoDia = $this->calcularTempoTotalDia($user->id, $now->format('Y-m-d'));
-                    $segundosTotaisNoDia += $segundosTrabalhados;
-
-                    // Converte expediente de horas para segundos
-                    $expedienteEmSegundos = $user->expediente * 3600;
-
-                    // Formata o tempo trabalhado neste ponto específico
-                    $lastPonto->horas_trabalhadas = $this->formatarTempo($segundosTrabalhados);
-
-                    // Calcula horas extras ou atraso com base no total do dia
-                    if ($segundosTotaisNoDia >= $expedienteEmSegundos) {
-                        $segundosExtras = $segundosTotaisNoDia - $expedienteEmSegundos;
-                        $lastPonto->horas_extras = $this->formatarTempo($segundosExtras);
-                        $lastPonto->atraso = "00:00:00";
-                        $mensagemAdicional = " (+" . $lastPonto->horas_extras . " extras)";
-                    } else {
-                        $segundosAtraso = $expedienteEmSegundos - $segundosTotaisNoDia;
-                        $lastPonto->horas_extras = "00:00:00";
-                        $lastPonto->atraso = $this->formatarTempo($segundosAtraso);
-                        $mensagemAdicional = " (-" . $lastPonto->atraso . " atraso)";
+                if ($registroDia) {
+                    // Já existe registro hoje
+                    if (!$registroDia->entrada_almoco) {
+                        // Registrar entrada almoço
+                        $registroDia->entrada_almoco = $now;
+                        $registroDia->save();
+                        $message = 'Entrada de almoço registrada às ' . $now->format('H:i:s');
+                        $working = false;
                     }
+                    elseif (!$registroDia->saida_almoco) {
+                        // Registrar saída almoço
+                        $registroDia->saida_almoco = $now;
+                        $registroDia->save();
+                        $message = 'Saída de almoço registrada às ' . $now->format('H:i:s');
+                        $working = true;
+                    }
+                    elseif (!$registroDia->saida) {
+                        // Registrar saída final
+                        $registroDia->saida = $now;
 
-                    $lastPonto->save();
+                        // Calcula tempo total trabalhado
+                        $segundosTrabalhados = $this->calcularTempoTotalComAlmoco($registroDia);
+                        $registroDia->horas_trabalhadas = $this->formatarTempo($segundosTrabalhados);
 
-                    $message = "Saída registrada com sucesso! Tempo trabalhado hoje: " .
-                              $this->formatarTempo($segundosTotaisNoDia) .
-                              $mensagemAdicional;
-                    $working = false;
+                        // Calcula horas extras ou atraso
+                        $expedienteEmSegundos = $user->expediente * 3600;
+                        if ($segundosTrabalhados > $expedienteEmSegundos) {
+                            $segundosExtras = $segundosTrabalhados - $expedienteEmSegundos;
+                            $registroDia->horas_extras = $this->formatarTempo($segundosExtras);
+                            $registroDia->atraso = "00:00:00";
+                            $mensagemExtra = " (+" . $registroDia->horas_extras . " extras)";
+                        } else {
+                            $segundosAtraso = $expedienteEmSegundos - $segundosTrabalhados;
+                            $registroDia->horas_extras = "00:00:00";
+                            $registroDia->atraso = $this->formatarTempo($segundosAtraso);
+                            $mensagemExtra = " (-" . $registroDia->atraso . " atraso)";
+                        }
+
+                        $registroDia->save();
+                        $message = "Saída registrada com sucesso! Tempo total: " .
+                                 $registroDia->horas_trabalhadas . $mensagemExtra;
+                        $working = false;
+                    }
                 } else {
+                    // Primeiro registro do dia
                     Ponto::create([
                         'user_id' => $user->id,
                         'entrada' => $now,
@@ -186,6 +193,25 @@ class PontoController extends Controller
             });
     }
 
+    private function calcularTempoTotalComAlmoco($ponto)
+    {
+        $segundosTotais = 0;
+
+        // Período da manhã (entrada até almoço)
+        if ($ponto->entrada && $ponto->entrada_almoco) {
+            $segundosTotais += Carbon::parse($ponto->entrada)
+                ->diffInSeconds(Carbon::parse($ponto->entrada_almoco));
+        }
+
+        // Período da tarde (volta do almoço até saída)
+        if ($ponto->saida_almoco && $ponto->saida) {
+            $segundosTotais += Carbon::parse($ponto->saida_almoco)
+                ->diffInSeconds(Carbon::parse($ponto->saida));
+        }
+
+        return $segundosTotais;
+    }
+
     public function status()
     {
         try {
@@ -194,16 +220,17 @@ class PontoController extends Controller
                 ->limit(5)
                 ->get()
                 ->map(function ($ponto) {
-                    $entrada = Carbon::parse($ponto->entrada);
-                    $saida = $ponto->saida ? Carbon::parse($ponto->saida) : null;
+                    $status = $this->determinarStatus($ponto);
 
                     return [
                         'user_name' => $ponto->user->name,
-                        'entrada' => $entrada->format('d/m/Y H:i:s'),
-                        'saida' => $saida ? $saida->format('d/m/Y H:i:s') : '-',
-                        'status' => $saida ? 'Saída' : 'Entrada',
-                        'tempo_total' => $this->calcularTempoTrabalhado($entrada, $saida ?: now()) .
-                            ($saida ? '' : ' (Em andamento)')
+                        'entrada' => Carbon::parse($ponto->entrada)->format('d/m/Y H:i:s'),
+                        'entrada_almoco' => $ponto->entrada_almoco ? Carbon::parse($ponto->entrada_almoco)->format('H:i:s') : '-',
+                        'saida_almoco' => $ponto->saida_almoco ? Carbon::parse($ponto->saida_almoco)->format('H:i:s') : '-',
+                        'saida' => $ponto->saida ? Carbon::parse($ponto->saida)->format('H:i:s') : '-',
+                        'status' => $status,
+                        'tempo_total' => $this->calcularTempoTotalComAlmoco($ponto) .
+                            (!$ponto->saida ? ' (Em andamento)' : '')
                     ];
                 });
 
@@ -218,5 +245,13 @@ class PontoController extends Controller
                 'message' => 'Erro ao buscar registros'
             ], 500);
         }
+    }
+
+    private function determinarStatus($ponto)
+    {
+        if (!$ponto->entrada_almoco) return 'Trabalhando';
+        if (!$ponto->saida_almoco) return 'Almoço';
+        if (!$ponto->saida) return 'Trabalhando';
+        return 'Finalizado';
     }
 }

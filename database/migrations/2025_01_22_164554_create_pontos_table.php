@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');  // Relacionamento com a tabela users
             $table->dateTime('entrada');  // Hora de entrada
+            $table->dateTime('entrada_almoco')->nullable();
+            $table->dateTime('saida_almoco')->nullable();
             $table->dateTime('saida')->nullable();  // Hora de saída
             $table->time('horas_trabalhadas')->nullable();
             $table->time('horas_extras')->default('00:00:00');  // Horas extras trabalhadas
