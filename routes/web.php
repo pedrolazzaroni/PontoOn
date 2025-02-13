@@ -15,8 +15,9 @@ use App\Http\Controllers\RelatorioController; // Add this line
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 // Rotas públicas
-Route::post('/ponto/register', [PontoController::class, 'register']);
-Route::get('/ponto/status', [PontoController::class, 'status']);
+Route::post('/ponto/register', [PontoController::class, 'register'])->name('ponto.register');
+Route::get('/ponto/status', [PontoController::class, 'status'])->name('ponto.status');
+Route::get('/ponto/current-time/{userId}', [PontoController::class, 'getCurrentTime'])->name('ponto.current-time');
 
 // Guest routes (login/register)
 Route::middleware('guest')->group(function () {

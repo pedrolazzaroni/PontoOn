@@ -48,6 +48,8 @@ class PontoController extends Controller
             }
 
             $now = now();
+            $message = '';
+            $working = false;
 
             DB::beginTransaction();
             try {
@@ -82,6 +84,8 @@ class PontoController extends Controller
 
                         // Calcula horas extras ou atraso
                         $expedienteEmSegundos = $user->expediente * 3600;
+                        $mensagemExtra = '';
+
                         if ($segundosTrabalhados > $expedienteEmSegundos) {
                             $segundosExtras = $segundosTrabalhados - $expedienteEmSegundos;
                             $registroDia->horas_extras = $this->formatarTempo($segundosExtras);
@@ -97,6 +101,9 @@ class PontoController extends Controller
                         $registroDia->save();
                         $message = "Saída registrada com sucesso! Tempo total: " .
                                  $registroDia->horas_trabalhadas . $mensagemExtra;
+                        $working = false;
+                    } else {
+                        $message = "Todos os registros do dia já foram realizados";
                         $working = false;
                     }
                 } else {
@@ -221,16 +228,18 @@ class PontoController extends Controller
                 ->get()
                 ->map(function ($ponto) {
                     $status = $this->determinarStatus($ponto);
+                    $tempoTotal = $this->calcularTempoEmAndamento($ponto);
 
                     return [
+                        'user_id' => $ponto->user_id,
                         'user_name' => $ponto->user->name,
                         'entrada' => Carbon::parse($ponto->entrada)->format('d/m/Y H:i:s'),
                         'entrada_almoco' => $ponto->entrada_almoco ? Carbon::parse($ponto->entrada_almoco)->format('H:i:s') : '-',
                         'saida_almoco' => $ponto->saida_almoco ? Carbon::parse($ponto->saida_almoco)->format('H:i:s') : '-',
                         'saida' => $ponto->saida ? Carbon::parse($ponto->saida)->format('H:i:s') : '-',
                         'status' => $status,
-                        'tempo_total' => $this->calcularTempoTotalComAlmoco($ponto) .
-                            (!$ponto->saida ? ' (Em andamento)' : '')
+                        'tempo_total' => $tempoTotal,
+                        'message' => $this->gerarMensagemStatus($status, $tempoTotal)
                     ];
                 });
 
@@ -247,11 +256,112 @@ class PontoController extends Controller
         }
     }
 
+    private function calcularTempoEmAndamento($ponto)
+    {
+        if ($ponto->saida) {
+            return $this->calcularTempoTotalComAlmoco($ponto);
+        }
+
+        $segundosTotais = 0;
+        $now = now();
+
+        if (!$ponto->entrada_almoco) {
+            // Ainda no primeiro período
+            $segundosTotais = Carbon::parse($ponto->entrada)->diffInSeconds($now);
+        } else if (!$ponto->saida_almoco) {
+            // Em almoço
+            $segundosTotais = Carbon::parse($ponto->entrada)->diffInSeconds($ponto->entrada_almoco);
+        } else {
+            // Após almoço
+            $segundosTotais = Carbon::parse($ponto->entrada)->diffInSeconds($ponto->entrada_almoco) +
+                             Carbon::parse($ponto->saida_almoco)->diffInSeconds($now);
+        }
+
+        return $this->formatarTempo($segundosTotais) . ' (Em andamento)';
+    }
+
+    private function gerarMensagemStatus($status, $tempoTotal)
+    {
+        switch ($status) {
+            case 'Trabalhando':
+                return "Trabalhando - Tempo atual: $tempoTotal";
+            case 'Almoço':
+                return "Em horário de almoço";
+            case 'Finalizado':
+                return "Expediente finalizado - Total: $tempoTotal";
+            default:
+                return "";
+        }
+    }
+
     private function determinarStatus($ponto)
     {
-        if (!$ponto->entrada_almoco) return 'Trabalhando';
-        if (!$ponto->saida_almoco) return 'Almoço';
-        if (!$ponto->saida) return 'Trabalhando';
+        if (!$ponto->entrada_almoco) {
+            return 'Trabalhando';
+        }
+        if (!$ponto->saida_almoco) {
+            return 'Almoço';
+        }
+        if (!$ponto->saida) {
+            return 'Trabalhando';
+        }
         return 'Finalizado';
+    }
+
+    public function getCurrentTime($userId)
+    {
+        try {
+            $ponto = Ponto::where('user_id', $userId)
+                ->whereDate('entrada', now()->format('Y-m-d'))
+                ->first();
+
+            if (!$ponto) {
+                return response()->json([
+                    'tempo_total' => '00:00:00',
+                    'status' => 'no_record'
+                ]);
+            }
+
+            $status = $this->determinarStatus($ponto);
+            $segundosTotais = 0;
+            $now = now();
+
+            switch ($status) {
+                case 'Almoço':
+                    // Tempo até entrar no almoço
+                    $segundosTotais = Carbon::parse($ponto->entrada)
+                        ->diffInSeconds(Carbon::parse($ponto->entrada_almoco));
+                    break;
+
+                case 'Trabalhando':
+                    if (!$ponto->entrada_almoco) {
+                        // Primeiro período
+                        $segundosTotais = Carbon::parse($ponto->entrada)->diffInSeconds($now);
+                    } else {
+                        // Após o almoço
+                        $segundosTotais = Carbon::parse($ponto->entrada)
+                            ->diffInSeconds(Carbon::parse($ponto->entrada_almoco)) +
+                            Carbon::parse($ponto->saida_almoco)
+                            ->diffInSeconds($now);
+                    }
+                    break;
+
+                case 'Finalizado':
+                    $segundosTotais = $this->calcularTempoTotalComAlmoco($ponto);
+                    break;
+            }
+
+            return response()->json([
+                'tempo_total' => $this->formatarTempo($segundosTotais),
+                'status' => $status
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Erro ao calcular tempo atual: ' . $e->getMessage());
+            return response()->json([
+                'tempo_total' => '00:00:00',
+                'status' => 'error'
+            ], 500);
+        }
     }
 }

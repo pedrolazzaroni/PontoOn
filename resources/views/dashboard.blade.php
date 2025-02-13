@@ -102,9 +102,9 @@
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuário</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entrada</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saída</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tempo Total</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Situação</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Tempo Total</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="logs-table-body" class="bg-white divide-y divide-gray-200">
@@ -157,7 +157,7 @@
 
         function updateStatus() {
             @if(Auth::check())
-            fetchWithAuth('/ponto/status')
+            fetchWithAuth('{{ route("ponto.status") }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.status === 'success') {
@@ -173,45 +173,66 @@
                             if (emptyState) emptyState.classList.add('hidden');
 
                             data.logs.forEach(log => {
+                                const isWorking = log.status === 'Trabalhando';
+                                const isLunch = log.status === 'Almoço';
+                                const statusClass = isWorking ? 'bg-green-100 text-green-800' :
+                                                 isLunch ? 'bg-orange-100 text-orange-800' :
+                                                 'bg-red-100 text-red-800';
+
                                 // Versão Desktop
                                 if (tbody) {
                                     const row = document.createElement('tr');
                                     row.innerHTML = `
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.user_name || 'N/A'}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.entrada || 'N/A'}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.saida || '-'}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.tempo_total || '-'}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                                                ${log.status === 'Entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                                ${log.status || 'N/A'}
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                            ${log.entrada_almoco ? 'Almoço ' + log.entrada_almoco : '-'}<br>
+                                            ${log.saida_almoco ? 'Retorno ' + log.saida_almoco : ''}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm ${isWorking ? 'text-green-600 font-medium' : 'text-gray-500'} text-center"
+                                            data-user-id="${log.user_id}"
+                                            data-entrada="${log.entrada}"
+                                            data-working="${isWorking}">
+                                            ${log.tempo_total}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass} ">
+                                                ${log.status}
                                             </span>
                                         </td>
                                     `;
                                     tbody.appendChild(row);
                                 }
 
-                                // Versão Mobile (Cards)
+                                // Versão Mobile atualizada
                                 if (logsCards) {
                                     const card = document.createElement('div');
                                     card.className = 'bg-white p-4 rounded-lg shadow border border-gray-100';
                                     card.innerHTML = `
                                         <div class="flex justify-between items-center mb-2">
                                             <span class="font-medium text-gray-900">${log.user_name || 'N/A'}</span>
-                                            <span class="px-2 py-1 text-xs font-semibold rounded-full
-                                                ${log.status === 'Entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                                ${log.status || 'N/A'}
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-full ${statusClass}">
+                                                ${log.status}
                                             </span>
                                         </div>
                                         <div class="space-y-1 text-sm">
                                             <p class="text-gray-600">Entrada: ${log.entrada || 'N/A'}</p>
+                                            <p class="text-gray-600">Almoço: ${log.entrada_almoco || '-'} - ${log.saida_almoco || '-'}</p>
                                             <p class="text-gray-600">Saída: ${log.saida || '-'}</p>
-                                            <p class="text-gray-600">Total: ${log.tempo_total || '-'}</p>
+                                            <p class="${isWorking ? 'text-green-600 font-medium' : 'text-gray-600'}"
+                                               data-user-id="${log.user_id}"
+                                               data-entrada="${log.entrada}"
+                                               data-working="${isWorking}">
+                                                Total: ${log.tempo_total}
+                                            </p>
                                         </div>
                                     `;
                                     logsCards.appendChild(card);
                                 }
                             });
+
+                            // Iniciar atualização em tempo real para registros ativos
+                            startRealTimeUpdates();
                         } else {
                             if (emptyState) emptyState.classList.remove('hidden');
                         }
@@ -222,6 +243,57 @@
                     showToast('Erro ao atualizar status', 'error');
                 });
             @endif
+        }
+
+        function startRealTimeUpdates() {
+            const workingElements = document.querySelectorAll('[data-working="true"]');
+            workingElements.forEach(element => {
+                const userId = element.getAttribute('data-user-id');
+                updateTempoTotalAjax(element, userId);
+            });
+        }
+
+        function updateTempoTotalAjax(element, userId) {
+            let isUpdating = true;
+
+            function update() {
+                if (!isUpdating) return;
+
+                fetchWithAuth('{{ url("ponto/current-time") }}/' + userId)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'almoco') {
+                            element.textContent = data.tempo_total;
+                            isUpdating = false; // Para a atualização durante o almoço
+                            element.classList.remove('text-green-600', 'font-medium');
+                            element.classList.add('text-orange-400');
+                            return;
+                        }
+
+                        if (data.status === 'Trabalhando') {
+                            element.textContent = data.tempo_total;
+                            element.classList.add('text-green-600', 'font-medium');
+                            element.classList.remove('text-orange-400');
+                        } else if (data.status === 'Finalizado') {
+                            element.textContent = data.tempo_total;
+                            isUpdating = false; // Para a atualização quando finalizado
+                            element.classList.remove('text-green-600', 'font-medium', 'text-orange-400');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao atualizar tempo:', error);
+                        isUpdating = false;
+                    });
+            }
+
+            update(); // Primeira execução
+            const intervalId = setInterval(() => {
+                if (isUpdating) {
+                    update();
+                } else {
+                    clearInterval(intervalId);
+                }
+            }, 1000);
         }
 
         // Atualiza o toast para mostrar mais detalhes do erro
@@ -279,7 +351,7 @@
                 jsonData[key] = value;
             });
 
-            fetchWithAuth('/ponto/register', {
+            fetchWithAuth('{{ route("ponto.register") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
