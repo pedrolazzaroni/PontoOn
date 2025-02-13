@@ -259,7 +259,7 @@ class PontoController extends Controller
     private function calcularTempoEmAndamento($ponto)
     {
         if ($ponto->saida) {
-            return $this->calcularTempoTotalComAlmoco($ponto);
+            return $this->formatarTempo($this->calcularTempoTotalComAlmoco($ponto));
         }
 
         $segundosTotais = 0;
@@ -268,16 +268,17 @@ class PontoController extends Controller
         if (!$ponto->entrada_almoco) {
             // Ainda no primeiro período
             $segundosTotais = Carbon::parse($ponto->entrada)->diffInSeconds($now);
+            return $this->formatarTempo($segundosTotais);
         } else if (!$ponto->saida_almoco) {
-            // Em almoço
+            // Em almoço - retorna apenas o tempo até o almoço, sem o "(Em andamento)"
             $segundosTotais = Carbon::parse($ponto->entrada)->diffInSeconds($ponto->entrada_almoco);
+            return $this->formatarTempo($segundosTotais);
         } else {
             // Após almoço
             $segundosTotais = Carbon::parse($ponto->entrada)->diffInSeconds($ponto->entrada_almoco) +
                              Carbon::parse($ponto->saida_almoco)->diffInSeconds($now);
+            return $this->formatarTempo($segundosTotais);
         }
-
-        return $this->formatarTempo($segundosTotais) . ' (Em andamento)';
     }
 
     private function gerarMensagemStatus($status, $tempoTotal)

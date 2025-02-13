@@ -1,7 +1,7 @@
 <nav class="bg-orange-400 p-4 shadow">
     <div class="container mx-auto flex justify-between items-center">
         <a href="{{ url('/') }}" class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-md h-10">
-            <img src="{{ asset('assets/images/clock.svg') }}" alt="Clock" class="w-5 h-5 text-orange-500">
+            {{-- <img src="{{ asset('assets/images/clock.svg') }}" alt="Clock" class="w-5 h-5 text-orange-500"> --}}
             <div class="flex flex-col justify-center">
                 <span class="text-sm font-bold text-orange-500">PontoOn</span>
                 <span class="text-[10px] text-orange-400">Controle de Ponto</span>

@@ -178,6 +178,9 @@
                                 const statusClass = isWorking ? 'bg-green-100 text-green-800' :
                                                  isLunch ? 'bg-orange-100 text-orange-800' :
                                                  'bg-red-100 text-red-800';
+                                const tempoClass = isWorking ? 'text-green-600 font-medium' :
+                                                 isLunch ? 'text-red-600 font-medium' :
+                                                 'text-gray-500';
 
                                 // Versão Desktop
                                 if (tbody) {
@@ -189,9 +192,10 @@
                                             ${log.entrada_almoco ? 'Almoço ' + log.entrada_almoco : '-'}<br>
                                             ${log.saida_almoco ? 'Retorno ' + log.saida_almoco : ''}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm ${isWorking ? 'text-green-600 font-medium' : 'text-gray-500'} text-center"
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm ${tempoClass} text-center"
                                             data-user-id="${log.user_id}"
                                             data-entrada="${log.entrada}"
+                                            data-status="${log.status}"
                                             data-working="${isWorking}">
                                             ${log.tempo_total}
                                         </td>
@@ -219,9 +223,10 @@
                                             <p class="text-gray-600">Entrada: ${log.entrada || 'N/A'}</p>
                                             <p class="text-gray-600">Almoço: ${log.entrada_almoco || '-'} - ${log.saida_almoco || '-'}</p>
                                             <p class="text-gray-600">Saída: ${log.saida || '-'}</p>
-                                            <p class="${isWorking ? 'text-green-600 font-medium' : 'text-gray-600'}"
+                                            <p class="${tempoClass}"
                                                data-user-id="${log.user_id}"
                                                data-entrada="${log.entrada}"
+                                               data-status="${log.status}"
                                                data-working="${isWorking}">
                                                 Total: ${log.tempo_total}
                                             </p>
@@ -259,24 +264,25 @@
             function update() {
                 if (!isUpdating) return;
 
-                fetchWithAuth('{{ url("ponto/current-time") }}/' + userId)
+                // Correção da rota para incluir o userId corretamente
+                fetchWithAuth(`{{ route("ponto.current-time", ":userId") }}`.replace(':userId', userId))
                     .then(response => response.json())
                     .then(data => {
-                        if (data.status === 'almoco') {
+                        if (data.status === 'almoco' || data.status === 'Almoço') {
                             element.textContent = data.tempo_total;
                             isUpdating = false; // Para a atualização durante o almoço
                             element.classList.remove('text-green-600', 'font-medium');
-                            element.classList.add('text-orange-400');
+                            element.classList.add('text-red-600', 'font-medium');
                             return;
                         }
 
                         if (data.status === 'Trabalhando') {
-                            element.textContent = data.tempo_total;
+                            element.textContent = formatarTempo(data.tempo_total);
                             element.classList.add('text-green-600', 'font-medium');
                             element.classList.remove('text-orange-400');
                         } else if (data.status === 'Finalizado') {
-                            element.textContent = data.tempo_total;
-                            isUpdating = false; // Para a atualização quando finalizado
+                            element.textContent = formatarTempo(data.tempo_total);
+                            isUpdating = false;
                             element.classList.remove('text-green-600', 'font-medium', 'text-orange-400');
                         }
                     })
@@ -286,7 +292,7 @@
                     });
             }
 
-            update(); // Primeira execução
+            update();
             const intervalId = setInterval(() => {
                 if (isUpdating) {
                     update();
@@ -294,6 +300,26 @@
                     clearInterval(intervalId);
                 }
             }, 1000);
+        }
+
+        // Função para formatar o tempo no padrão H:i:s
+        function formatarTempo(tempo) {
+            if (!tempo) return '00:00:00';
+
+            // Se já estiver no formato correto, retorna o próprio tempo
+            if (tempo.match(/^\d{2}:\d{2}:\d{2}$/)) {
+                return tempo;
+            }
+
+            // Se for número, converte para o formato correto
+            const segundos = parseInt(tempo);
+            if (isNaN(segundos)) return '00:00:00';
+
+            const horas = Math.floor(segundos / 3600);
+            const minutos = Math.floor((segundos % 3600) / 60);
+            const segs = segundos % 60;
+
+            return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segs).padStart(2, '0')}`;
         }
 
         // Atualiza o toast para mostrar mais detalhes do erro
