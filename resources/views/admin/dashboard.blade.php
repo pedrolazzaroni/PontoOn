@@ -4,14 +4,14 @@
 @section('content')
 <div class="container mx-auto px-4 py-8 bg-white rounded-b-lg shadow-md" style="min-height: calc(100vh - 80px);">
     <!-- Welcome Section -->
-    <div class="flex justify-between items-start mb-8">
+    <div class="flex flex-col md:flex-row justify-between items-start mb-8">
         <div>
             <h1 class="text-3xl font-bold text-orange-500">Olá, {{ Auth::user()->name }}</h1>
             <div class="w-36 h-2 rounded-full bg-orange-400"></div>
             <p class="text-gray-600 mt-2">Seus resumos atualizados</p>
 
-            <div class="flex gap-4 mt-6">
-                <div class="bg-white rounded-lg shadow-md p-4 w-48">
+            <div class="flex flex-col md:flex-row gap-4 mt-6 md:justify-center">
+                <div class="bg-white rounded-lg shadow-md p-4 w-48 ">
                     <h3 class="text-lg font-semibold text-orange-500 mb-2 text-center">Horas de Trabalho</h3>
                     <button onclick="openWorkingHoursModal()" class="group relative inline-block w-full bg-orange-400 text-white px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-200 text-sm cursor-pointer">
                         <span class="block transition-opacity duration-300 group-hover:opacity-0">
@@ -35,9 +35,9 @@
 
 
         <!-- Quick Access Cards -->
-        <div class="flex space-x-4">
+        <div class="flex flex-col md:flex-row md:space-x-4 mt-4 md:mt-0">
             <!-- Existing Users Card -->
-            <div class="bg-white rounded-lg shadow-md p-6 w-64">
+            <div class="bg-white rounded-lg shadow-md p-6 w-full md:w-64">
                 <div class="text-center">
                     <h3 class="text-lg font-semibold text-orange-500 mb-2">Usuários Gerenciados</h3>
                     <p class="text-4xl font-bold text-orange-400 mb-4">{{ $users->count() }}</p>
@@ -54,7 +54,7 @@
 
 
     <!-- Cards Grid -->
-    <div class="grid grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Card Histórico de Pontos -->
         <div class="bg-white rounded-lg shadow-md p-6 flex flex-col justify-between h-full">
             <div>
