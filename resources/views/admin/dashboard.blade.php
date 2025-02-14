@@ -56,42 +56,53 @@
     <!-- Cards Grid -->
     <div class="grid grid-cols-3 gap-6 mb-8">
         <!-- Card Histórico de Pontos -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-800">Histórico de Pontos</h2>
-                <span class="text-sm text-gray-500">Últimos 4 registros</span>
-            </div>
-
-            <div class="space-y-3">
-                @foreach($recentPoints->take(4) as $point)
-                <div class="bg-orange-50 rounded-lg p-3">
-                    <div class="flex justify-between items-center mb-2">
-                        <p class="font-semibold text-gray-800">{{ $point->user->name }}</p>
-                        <p class="text-sm text-gray-600">{{ \Carbon\Carbon::parse($point->entrada)->format('d/m/Y') }}</p>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <div class="flex items-center space-x-2">
-                            <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Entrada</span>
-                            <span class="text-gray-600">{{ \Carbon\Carbon::parse($point->entrada)->format('H:i:s') }}</span>
-                        </div>
-                        @if($point->saida)
-                        <div class="flex items-center space-x-2">
-                            <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Saída</span>
-                            <span class="text-gray-600">{{ \Carbon\Carbon::parse($point->saida)->format('H:i:s') }}</span>
-                        </div>
-                        @endif
-                    </div>
-                    @if($point->saida)
-                    <div class="mt-2 text-right">
-                        <span class="text-xs text-gray-500">
-                            Total: {{ $point->horas_trabalhadas ?? '-' }}
-                        </span>
-                    </div>
-                    @endif
+        <div class="bg-white rounded-lg shadow-md p-6 flex flex-col justify-between h-full">
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Histórico de Pontos</h2>
+                    <span class="text-sm text-gray-500">Últimos registros</span>
                 </div>
-                @endforeach
+                @if($recentPoints->isEmpty())
+                    <div class="flex flex-col items-center justify-center p-6 min-h-[180px]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <rect x="3" y="3" width="18" height="18" rx="3" ry="3" stroke-width="2" stroke="currentColor" fill="none"/>
+                          <path d="M8 12h8" stroke-width="2" stroke="currentColor" stroke-linecap="round"/>
+                          <path d="M12 8v8" stroke-width="2" stroke="currentColor" stroke-linecap="round"/>
+                        </svg>
+                        <p class="text-gray-500">Nenhum ponto registrado.</p>
+                    </div>
+                @else
+                    <div class="space-y-3">
+                        @foreach($recentPoints->take(4) as $point)
+                        <div class="bg-orange-50 rounded-lg p-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="font-semibold text-gray-800">{{ $point->user->name }}</p>
+                                <p class="text-sm text-gray-600">{{ \Carbon\Carbon::parse($point->entrada)->format('d/m/Y') }}</p>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Entrada</span>
+                                    <span class="text-gray-600">{{ \Carbon\Carbon::parse($point->entrada)->format('H:i:s') }}</span>
+                                </div>
+                                @if($point->saida)
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Saída</span>
+                                    <span class="text-gray-600">{{ \Carbon\Carbon::parse($point->saida)->format('H:i:s') }}</span>
+                                </div>
+                                @endif
+                            </div>
+                            @if($point->saida)
+                            <div class="mt-2 text-right">
+                                <span class="text-xs text-gray-500">
+                                    Total: {{ $point->horas_trabalhadas ?? '-' }}
+                                </span>
+                            </div>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
-
             <div class="mt-4 text-right">
                 <a href="{{ route('admin.historico') }}" class="text-orange-400 hover:text-orange-500 font-semibold text-sm">
                     Ver mais →
@@ -100,26 +111,36 @@
         </div>
 
         <!-- Card Horas Extras -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-800">Horas Extras</h2>
-                <span class="text-sm text-gray-500">Últimos registros</span>
-            </div>
-
-            <div class="space-y-4">
-                @foreach($overtimeUsers as $point)
-                <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
-                    <div>
-                        <p class="font-semibold text-gray-800">{{ $point->user->name }}</p>
-                        <p class="text-sm text-gray-600">{{ $point->created_at->format('d/m/Y') }}</p>
-                    </div>
-                    <span class="text-orange-400 font-medium">
-                        +{{ $point->horas_extras }}
-                    </span>
+        <div class="bg-white rounded-lg shadow-md p-6 flex flex-col justify-between h-full">
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Horas Extras</h2>
+                    <span class="text-sm text-gray-500">Últimos registros</span>
                 </div>
-                @endforeach
+                @if($overtimeUsers->isEmpty())
+                    <div class="flex flex-col items-center justify-center p-6 min-h-[180px]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <circle cx="12" cy="12" r="10" stroke-width="2" stroke="currentColor" fill="none"/>
+                          <path d="M8 12h8" stroke-width="2" stroke="currentColor" stroke-linecap="round"/>
+                        </svg>
+                        <p class="text-gray-500">Nenhuma hora extra registrada.</p>
+                    </div>
+                @else
+                    <div class="space-y-4">
+                        @foreach($overtimeUsers as $point)
+                        <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                            <div>
+                                <p class="font-semibold text-gray-800">{{ $point->user->name }}</p>
+                                <p class="text-sm text-gray-600">{{ $point->created_at->format('d/m/Y') }}</p>
+                            </div>
+                            <span class="text-orange-400 font-medium">
+                                +{{ $point->horas_extras }}
+                            </span>
+                        </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
-
             <div class="mt-4 text-right">
                 <a href="{{ route('admin.hora-extra') }}" class="text-orange-400 hover:text-orange-500 font-semibold text-sm">
                     Ver mais →
@@ -128,28 +149,38 @@
         </div>
 
         <!-- Card Horas em Atraso -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-800">Horas em Atraso</h2>
-                <span class="text-sm text-gray-500">Últimos registros</span>
-            </div>
-
-            <div class="space-y-4">
-                @foreach($lateUsers as $ponto)
-                <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
-                    <div>
-                        <p class="font-semibold text-gray-800">{{ $ponto->user->name }}</p>
-                        <p class="text-sm text-gray-600">
-                            {{ Carbon\Carbon::parse($ponto->entrada)->format('d/m/Y') }}
-                        </p>
-                    </div>
-                    <span class="text-red-500 font-medium">
-                        {{ $ponto->atraso }}
-                    </span>
+        <div class="bg-white rounded-lg shadow-md p-6 flex flex-col justify-between h-full">
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Horas em Atraso</h2>
+                    <span class="text-sm text-gray-500">Últimos registros</span>
                 </div>
-                @endforeach
+                @if($lateUsers->isEmpty())
+                    <div class="flex flex-col items-center justify-center p-6 min-h-[180px]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path d="M12 8v4l3 3" stroke-width="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                          <circle cx="12" cy="12" r="10" stroke-width="2" stroke="currentColor" fill="none"/>
+                        </svg>
+                        <p class="text-gray-500">Nenhum atraso registrado.</p>
+                    </div>
+                @else
+                    <div class="space-y-4">
+                        @foreach($lateUsers as $ponto)
+                        <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                            <div>
+                                <p class="font-semibold text-gray-800">{{ $ponto->user->name }}</p>
+                                <p class="text-sm text-gray-600">
+                                    {{ Carbon\Carbon::parse($ponto->entrada)->format('d/m/Y') }}
+                                </p>
+                            </div>
+                            <span class="text-red-500 font-medium">
+                                {{ $ponto->atraso }}
+                            </span>
+                        </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
-
             <div class="mt-4 text-right">
                 <a href="{{ route('admin.hora-atraso') }}" class="text-orange-400 hover:text-orange-500 font-semibold text-sm">
                     Ver mais →
