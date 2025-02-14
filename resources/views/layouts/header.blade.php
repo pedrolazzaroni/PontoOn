@@ -61,7 +61,7 @@
     </div>
 
     <!-- Mobile Menu (Sliding Panel) -->
-    <div id="mobileMenuContainer" class="fixed inset-y-0 left-0 w-64 bg-orange-400 shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-50">
+    <div id="mobileMenuContainer" class="fixed inset-y-0 left-0 w-64 bg-orange-400 shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-50 opacity-0 md:hidden">
         <div class="h-full flex flex-col">
             <!-- Menu Header -->
             <div class="p-4 flex justify-between items-center border-b border-orange-300">
@@ -113,7 +113,7 @@
     </div>
 
     <!-- Backdrop Overlay -->
-    <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-40"></div>
+    <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-40 md:hidden"></div>
 </nav>
 
 <script>
@@ -121,6 +121,14 @@
     const mobileMenuClose = document.getElementById('mobileMenuClose');
     const mobileMenuContainer = document.getElementById('mobileMenuContainer');
     const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+    // Add this function to handle initial state
+    function initializeMobileMenu() {
+        // Set initial opacity after a small delay to prevent flash
+        setTimeout(() => {
+            mobileMenuContainer.style.opacity = '1';
+        }, 100);
+    }
 
     function openMenu() {
         mobileMenuContainer.classList.add('translate-x-0');
@@ -138,6 +146,8 @@
         document.body.style.overflow = '';
     }
 
+    // Initialize the menu after DOM is loaded
+    document.addEventListener('DOMContentLoaded', initializeMobileMenu);
     mobileMenuToggle.addEventListener('click', openMenu);
     mobileMenuClose.addEventListener('click', closeMenu);
     mobileMenuOverlay.addEventListener('click', closeMenu);
