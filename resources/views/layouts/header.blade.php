@@ -61,7 +61,7 @@
     </div>
 
     <!-- Mobile Menu (Sliding Panel) -->
-    <div id="mobileMenuContainer" class="fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out z-50 w-64 bg-orange-400 shadow-lg">
+    <div id="mobileMenuContainer" class="fixed inset-y-0 left-0 w-64 bg-orange-400 shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-50">
         <div class="h-full flex flex-col">
             <!-- Menu Header -->
             <div class="p-4 flex justify-between items-center border-b border-orange-300">
@@ -113,7 +113,7 @@
     </div>
 
     <!-- Backdrop Overlay -->
-    <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-40"></div>
+    <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-40"></div>
 </nav>
 
 <script>
@@ -123,14 +123,18 @@
     const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
 
     function openMenu() {
+        mobileMenuContainer.classList.add('translate-x-0');
         mobileMenuContainer.classList.remove('-translate-x-full');
-        mobileMenuOverlay.classList.remove('hidden');
+        mobileMenuOverlay.classList.add('opacity-100');
+        mobileMenuOverlay.classList.remove('opacity-0', 'pointer-events-none');
         document.body.style.overflow = 'hidden';
     }
 
     function closeMenu() {
+        mobileMenuContainer.classList.remove('translate-x-0');
         mobileMenuContainer.classList.add('-translate-x-full');
-        mobileMenuOverlay.classList.add('hidden');
+        mobileMenuOverlay.classList.remove('opacity-100');
+        mobileMenuOverlay.classList.add('opacity-0', 'pointer-events-none');
         document.body.style.overflow = '';
     }
 
