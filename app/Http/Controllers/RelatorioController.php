@@ -40,11 +40,11 @@ class RelatorioController extends Controller
         $workingHours = [];
         $overtime = [];
         $late = [];
-        $totalSeconds = 0;
+        $totalWorkingSeconds = 0;
         $totalOvertimeSeconds = 0;
         $totalLateSeconds = 0;
-        $maxSeconds = 0;
-        $minSeconds = PHP_FLOAT_MAX;
+        $maxWorkingSeconds = 0;
+        $minWorkingSeconds = PHP_FLOAT_MAX;
         $daysPresent = 0;
         $totalEntries = 0;
 
@@ -53,19 +53,19 @@ class RelatorioController extends Controller
             $dayStats = $this->processDayStats($dayPoints);
 
             // Atualizar totais
-            if ($dayStats['seconds'] > 0) {
+            if ($dayStats['workingSeconds'] > 0) {
                 $daysPresent++;
-                $maxSeconds = max($maxSeconds, $dayStats['seconds']);
-                $minSeconds = min($minSeconds, $dayStats['seconds']);
+                $maxWorkingSeconds = max($maxWorkingSeconds, $dayStats['workingSeconds']);
+                $minWorkingSeconds = min($minWorkingSeconds, $dayStats['workingSeconds']);
             }
 
-            $totalSeconds += $dayStats['seconds'];
+            $totalWorkingSeconds += $dayStats['workingSeconds'];
             $totalOvertimeSeconds += $dayStats['overtimeSeconds'];
             $totalLateSeconds += $dayStats['lateSeconds'];
             $totalEntries += $dayStats['entries'];
 
             // Dados para gráficos - mantendo o formato decimal para os gráficos
-            $workingHours[] = round($dayStats['seconds'] / 3600, 2);
+            $workingHours[] = round($dayStats['workingSeconds'] / 3600, 2);
             $overtime[] = round($dayStats['overtimeSeconds'] / 3600, 2);
             $late[] = round($dayStats['lateSeconds'] / 3600, 2);
         }
@@ -75,19 +75,18 @@ class RelatorioController extends Controller
             'workingHours' => $workingHours,
             'overtime' => $overtime,
             'late' => $late,
-            'stats' => $this->calculateStats($totalSeconds, $totalOvertimeSeconds, $totalLateSeconds, $daysPresent, $totalEntries, $maxSeconds, $minSeconds)
+            'stats' => $this->calculateStats($totalWorkingSeconds, $totalOvertimeSeconds, $totalLateSeconds, $daysPresent, $totalEntries, $maxWorkingSeconds, $minWorkingSeconds)
         ];
     }
 
     protected function processDayStats($dayPoints)
     {
-        $stats = ['seconds' => 0, 'overtimeSeconds' => 0, 'lateSeconds' => 0, 'entries' => 0];
+        $stats = ['seconds' => 0, 'overtimeSeconds' => 0, 'lateSeconds' => 0, 'entries' => 0, 'workingSeconds' => 0];
 
         foreach ($dayPoints as $ponto) {
-            if ($ponto->entrada && $ponto->saida) {
-                $entrada = Carbon::parse($ponto->entrada);
-                $saida = Carbon::parse($ponto->saida);
-                $stats['seconds'] += $entrada->diffInSeconds($saida);
+            if ($ponto->horas_trabalhadas && $ponto->horas_trabalhadas !== '00:00:00') {
+                list($hours, $minutes, $seconds) = explode(':', $ponto->horas_trabalhadas);
+                $stats['workingSeconds'] += ($hours * 3600) + ($minutes * 60) + $seconds;
                 $stats['entries']++;
             }
 
@@ -118,18 +117,18 @@ class RelatorioController extends Controller
         return sprintf("%02d:%02d", $hours, $minutes);
     }
 
-    protected function calculateStats($totalSeconds, $totalOvertimeSeconds, $totalLateSeconds, $daysPresent, $totalEntries, $maxSeconds, $minSeconds)
+    protected function calculateStats($totalWorkingSeconds, $totalOvertimeSeconds, $totalLateSeconds, $daysPresent, $totalEntries, $maxWorkingSeconds, $minWorkingSeconds)
     {
         return [
-            'mediaHoras' => $this->decimalToHours($daysPresent ? $totalSeconds / ($daysPresent * 3600) : 0),
+            'mediaHoras' => $this->decimalToHours($daysPresent ? $totalWorkingSeconds / ($daysPresent * 3600) : 0),
             'totalHorasExtras' => $this->decimalToHours($totalOvertimeSeconds / 3600),
             'totalAtrasos' => $this->decimalToHours($totalLateSeconds / 3600),
             'diasTrabalhados' => $daysPresent,
-            'maxHoras' => $this->decimalToHours($maxSeconds / 3600),
-            'minHoras' => $daysPresent ? $this->decimalToHours($minSeconds / 3600) : '00:00',
+            'maxHoras' => $this->decimalToHours($maxWorkingSeconds / 3600),
+            'minHoras' => $daysPresent ? $this->decimalToHours($minWorkingSeconds / 3600) : '00:00',
             'totalRegistros' => $totalEntries,
             'mediaRegistrosDia' => $daysPresent ? round($totalEntries / $daysPresent, 1) : 0,
-            'horasTotais' => $this->decimalToHours($totalSeconds / 3600),
+            'horasTotais' => $this->decimalToHours($totalWorkingSeconds / 3600),
         ];
     }
 
