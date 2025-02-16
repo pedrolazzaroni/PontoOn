@@ -88,14 +88,12 @@
             <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 overflow-x-auto">
                 <h2 class="text-xl sm:text-2xl font-semibold text-orange-500 mb-4">Últimos Registros de Ponto</h2>
                 <div class="min-w-full">
-                    <!-- Versão Mobile da Tabela (visible apenas em mobile) -->
                     <div class="sm:hidden space-y-4">
                         <div id="logs-cards" class="space-y-3">
                             <!-- Cards serão inseridos aqui via JavaScript para mobile -->
                         </div>
                     </div>
 
-                    <!-- Versão Desktop da Tabela (hidden em mobile) -->
                     <div class="hidden sm:block">
                         <table class="min-w-full">
                             <thead class="bg-orange-50">
@@ -125,7 +123,6 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Função para obter o CSRF token
         function getCSRFToken() {
             return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         }
