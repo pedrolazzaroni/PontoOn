@@ -21,35 +21,36 @@
     <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <form action="{{ route('admin.users') }}" method="GET" class="flex flex-col md:flex-row gap-4">
             <div class="flex-1 flex flex-col md:flex-row gap-4">
-                <input type="text"
-                       name="search"
-                       placeholder="Buscar usuário..."
-                       value="{{ request('search') }}"
-                       class="w-full input-focus-effect p-3 rounded-lg outline outline-gray-300 outline-1">
-                <div class="flex gap-2 md:gap-4">
+                <!-- Campo de busca -->
+                <div class="flex-1">
+                    <input type="text"
+                           name="search"
+                           placeholder="Buscar usuário..."
+                           value="{{ request('search') }}"
+                           class="w-full input-focus-effect p-3 rounded-lg outline outline-gray-300 outline-1">
+                </div>
+
+                <!-- Botões de ação -->
+                <div class="flex gap-2">
                     <button type="submit"
-                            class="flex-1 md:flex-none bg-orange-400 text-white px-3 rounded-lg hover:bg-orange-500 transition-all duration-200 ease-in-out hover:shadow-lg cursor-pointer">
+                            class="w-32 bg-orange-400 text-white px-4 py-3 rounded-lg hover:bg-orange-500 transition-all duration-200 ease-in-out hover:shadow-lg">
                         Pesquisar
                     </button>
                     <button type="button"
                             onclick="window.location.href='{{ route('admin.users') }}'"
-                            class="flex-1 md:flex-none bg-gray-200 text-gray-800 px-3 rounded-lg hover:bg-gray-300 transition-all duration-200 ease-in-out hover:shadow-lg cursor-pointer">
+                            class="w-32 bg-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-300 transition-all duration-200 ease-in-out hover:shadow-lg">
                         Limpar Filtros
                     </button>
                 </div>
-            </div>
-            <!-- Custom select para filtrar status -->
-            <div class="relative w-full md:w-auto">
-                <select name="status"
-                        class="w-full input-focus-effect appearance-none p-3 rounded-lg outline outline-gray-400 outline-1 cursor-pointer bg-white pr-10">
-                    <option value="" {{ request('status') === null ? 'selected' : '' }}>Todos os Status</option>
-                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Ativos</option>
-                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inativos</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                    </svg>
+
+                <!-- Select de Status -->
+                <div class="w-48">
+                    <select name="status"
+                            class="w-full input-focus-effect appearance-none p-3 rounded-lg outline outline-gray-400 outline-1 cursor-pointer bg-white">
+                        <option value="" {{ request('status') === null ? 'selected' : '' }}>Todos os Status</option>
+                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Ativos</option>
+                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inativos</option>
+                    </select>
                 </div>
             </div>
         </form>
@@ -185,3 +186,4 @@
     @include('admin.partials.user-modals')
     @include('admin.partials.user-scripts')
 @endsection
+
