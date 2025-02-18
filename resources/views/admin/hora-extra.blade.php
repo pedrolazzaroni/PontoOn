@@ -13,7 +13,8 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div class="overflow-x-auto overflow-hidden">
+        <!-- Desktop Table View -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead>
                     <tr class="bg-gray-50">
@@ -92,13 +93,70 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
 
-            <!-- Empty state check -->
-            @if($totalRecords == 0)
-            <div class="text-center py-8">
-                <div class="text-gray-400 text-lg">Nenhum registro de hora extra encontrado</div>
-            </div>
-            @endif
+        <!-- Mobile Card View -->
+        <div class="md:hidden divide-y divide-gray-100">
+            @foreach($users as $user)
+                @if($user->pontos->count() > 0)
+                <div class="p-4">
+                    <!-- User Info -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 bg-orange-100 rounded-full flex items-center justify-center">
+                                <span class="text-lg font-medium text-orange-600">
+                                    {{ substr($user->name, 0, 1) }}
+                                </span>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-900">{{ $user->name }}</p>
+                                <p class="text-xs text-gray-500">{{ $user->pontos->count() }} registros</p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            {{ $user->total_horas_extras }} horas
+                        </span>
+                    </div>
+
+                    <!-- Toggle Details Button -->
+                    <button onclick="toggleDetailsMobile({{ $user->id }})"
+                            class="w-full flex items-center justify-center space-x-2 bg-orange-50 text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-100 transition-colors duration-200">
+                        <span class="text-sm">Ver Detalhes</span>
+                        <svg id="arrow-mobile-{{ $user->id }}" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Collapsible Content -->
+                    <div id="details-mobile-{{ $user->id }}" class="hidden mt-4">
+                        <div class="space-y-3">
+                            @foreach($user->pontos as $ponto)
+                            <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">{{ $ponto->data_formatada }}</p>
+                                        <div class="mt-1 space-y-1">
+                                            <p class="text-xs text-gray-600">
+                                                Entrada: {{ $ponto->hora_entrada_formatada }}
+                                            </p>
+                                            @if($ponto->hora_saida_formatada)
+                                            <p class="text-xs text-gray-600">
+                                                Saída: {{ $ponto->hora_saida_formatada }}
+                                            </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                        +{{ $ponto->horas_extras }}
+                                    </span>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                @endif
+            @endforeach
         </div>
 
         <!-- Pagination Section -->
@@ -193,6 +251,34 @@ function toggleDetails(userId) {
         setTimeout(() => {
             detailsRow.classList.add('hidden');
         }, 500); // Match duration with CSS transition
+    }
+}
+
+function toggleDetailsMobile(userId) {
+    const detailsContent = document.getElementById(`details-mobile-${userId}`);
+    const arrow = document.getElementById(`arrow-mobile-${userId}`);
+
+    if (detailsContent.classList.contains('hidden')) {
+        detailsContent.classList.remove('hidden');
+        arrow.classList.add('rotate-180');
+
+        // Animate content expansion
+        detailsContent.style.opacity = '0';
+        detailsContent.style.maxHeight = '0';
+
+        setTimeout(() => {
+            detailsContent.style.opacity = '1';
+            detailsContent.style.maxHeight = `${detailsContent.scrollHeight}px`;
+        }, 50);
+    } else {
+        // Animate content collapse
+        detailsContent.style.opacity = '0';
+        detailsContent.style.maxHeight = '0';
+        arrow.classList.remove('rotate-180');
+
+        setTimeout(() => {
+            detailsContent.classList.add('hidden');
+        }, 300);
     }
 }
 </script>
