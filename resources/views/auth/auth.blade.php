@@ -159,7 +159,7 @@
     </div>
 
     <!-- Lado Direito - Imagem e Logo -->
-    <div class="hidden sm:flex w-full sm:w-1/2 bg-gray-400 flex-col items-center justify-center gap-8 p-4">
+    <div class="hidden sm:flex w-full sm:w-1/2 bg-gray-400 flex-col cursor-pointer items-center justify-center gap-8 p-4" onclick="location.href='{{ route('dashboard') }}';">
         <div class="flex items-center gap-4 sm:gap-6 bg-white px-6 sm:px-12 py-4 sm:py-8 rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl transform hover:scale-105 transition-all duration-300">
             <svg class="w-16 sm:w-24 h-16 sm:h-24 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
