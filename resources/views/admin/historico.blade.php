@@ -13,7 +13,8 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div class="overflow-x-auto">
+        <!-- Desktop Table View -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead>
                     <tr class="bg-gray-50">
@@ -152,6 +153,88 @@
             </table>
         </div>
 
+        <!-- Mobile Card View -->
+        <div class="md:hidden divide-y divide-gray-100">
+            @foreach($users as $user)
+                @if($user->pontos->count() > 0)
+                <div class="p-4">
+                    <!-- User Info -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 bg-orange-100 rounded-full flex items-center justify-center">
+                                <span class="text-lg font-medium text-orange-600">
+                                    {{ substr($user->name, 0, 1) }}
+                                </span>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-900">{{ $user->name }}</p>
+                                <p class="text-xs text-gray-500">{{ $user->pontos->count() }} registros</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleDetailsMobile({{ $user->id }})"
+                                class="text-orange-600 hover:text-orange-900 transition-colors duration-200 flex items-center space-x-1">
+                            <span class="text-sm">Detalhes</span>
+                            <svg id="arrow-mobile-{{ $user->id }}" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Collapsible Content -->
+                    <div id="details-mobile-{{ $user->id }}" class="hidden">
+                        <div class="space-y-3">
+                            @foreach($user->pontos->sortByDesc('created_at') as $ponto)
+                            <div class="bg-orange-50 rounded-lg p-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-medium text-gray-900">
+                                        {{ $ponto->created_at->format('d/m/Y') }}
+                                    </span>
+                                    <span class="text-xs px-2 py-1 bg-orange-100 text-orange-600 rounded-full">
+                                        {{ $ponto->saida ? 'Completo' : 'Em andamento' }}
+                                    </span>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Entrada:</span>
+                                        <span class="font-medium">{{ $ponto->entrada ? \Carbon\Carbon::parse($ponto->entrada)->format('H:i:s') : '-' }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Saída:</span>
+                                        <span class="font-medium">{{ $ponto->saida ? \Carbon\Carbon::parse($ponto->saida)->format('H:i:s') : '-' }}</span>
+                                    </div>
+                                    @if($ponto->saida)
+                                    <div class="pt-2 border-t border-orange-100">
+                                        <div class="flex flex-col space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-gray-600">Total:</span>
+                                                <span class="font-medium">{{ $ponto->horas_trabalhadas }}</span>
+                                            </div>
+                                            @if($ponto->horas_extras != '00:00:00')
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-green-600">Extras:</span>
+                                                <span class="font-medium text-green-600">{{ $ponto->horas_extras }}</span>
+                                            </div>
+                                            @endif
+                                            @if($ponto->atraso != '00:00:00')
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-red-600">Atraso:</span>
+                                                <span class="font-medium text-red-600">{{ $ponto->atraso }}</span>
+                                            </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                @endif
+            @endforeach
+        </div>
+
         <!-- Pagination Section -->
         @if($users->hasPages())
         <div class="px-6 py-6 border-t border-gray-100">
@@ -233,7 +316,7 @@ function toggleDetails(userId) {
         detailsContent.classList.add('opacity-0');
 
         // Animate records out
-        records.forEach((record, index) => {
+        records.forEach((record) => {
             record.classList.add('translate-y-4', 'opacity-0');
         });
 
@@ -244,6 +327,34 @@ function toggleDetails(userId) {
         setTimeout(() => {
             detailsRow.classList.add('hidden');
         }, 500); // Match duration with CSS transition
+    }
+}
+
+function toggleDetailsMobile(userId) {
+    const detailsContent = document.getElementById(`details-mobile-${userId}`);
+    const arrow = document.getElementById(`arrow-mobile-${userId}`);
+
+    if (detailsContent.classList.contains('hidden')) {
+        detailsContent.classList.remove('hidden');
+        arrow.classList.add('rotate-180');
+
+        // Animar a expansão do conteúdo
+        detailsContent.style.opacity = '0';
+        detailsContent.style.maxHeight = '0';
+
+        setTimeout(() => {
+            detailsContent.style.opacity = '1';
+            detailsContent.style.maxHeight = `${detailsContent.scrollHeight}px`;
+        }, 50);
+    } else {
+        // Animar o recolhimento do conteúdo
+        detailsContent.style.opacity = '0';
+        detailsContent.style.maxHeight = '0';
+        arrow.classList.remove('rotate-180');
+
+        setTimeout(() => {
+            detailsContent.classList.add('hidden');
+        }, 300);
     }
 }
 </script>
