@@ -174,6 +174,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Form toggle functionality
         const showRegister = document.getElementById('show-register');
         const showLogin = document.getElementById('show-login');
         const loginForm = document.getElementById('login-form');
@@ -181,29 +182,75 @@
 
         showRegister.addEventListener('click', function(e) {
             e.preventDefault();
-            // Iniciar animação de contração do login
             loginForm.classList.add('transitioning');
             loginForm.classList.remove('active');
 
-            // Após a animação, mostrar o registro
             setTimeout(() => {
                 loginForm.classList.remove('transitioning');
                 registerForm.classList.add('active');
-            }, 600); // Duração da animação
+            }, 600);
         });
 
         showLogin.addEventListener('click', function(e) {
             e.preventDefault();
-            // Iniciar animação de contração do registro
             registerForm.classList.add('transitioning');
             registerForm.classList.remove('active');
 
-            // Após a animação, mostrar o login
             setTimeout(() => {
                 registerForm.classList.remove('transitioning');
                 loginForm.classList.add('active');
-            }, 600); // Duração da animação
+            }, 600);
+        });
+
+        // CPF Input Formatting
+        const cpfInput = document.getElementById('cpf');
+
+        function formatCPF(value) {
+            // Remove tudo que não é dígito
+            value = value.replace(/\D/g, '');
+
+            // Adiciona pontos e traço
+            if (value.length > 0) value = value.replace(/^(\d{3})/, '$1.');
+            if (value.length > 3) value = value.replace(/^(\d{3})\.(\d{3})/, '$1.$2.');
+            if (value.length > 6) value = value.replace(/^(\d{3})\.(\d{3})\.(\d{3})/, '$1.$2.$3-');
+
+            // Limita o tamanho
+            if (value.length > 14) value = value.substr(0, 14);
+
+            return value;
+        }
+
+        cpfInput.addEventListener('input', function(e) {
+            const start = e.target.selectionStart;
+            const end = e.target.selectionEnd;
+            const oldValue = e.target.value;
+            const newValue = formatCPF(e.target.value);
+
+            e.target.value = newValue;
+
+            // Mantém a posição do cursor
+            if (oldValue !== newValue) {
+                const addedChars = (newValue.match(/[.-]/g) || []).length - (oldValue.match(/[.-]/g) || []).length;
+                e.target.setSelectionRange(start + addedChars, end + addedChars);
+            }
+        });
+
+        // Tratamento especial para backspace e delete
+        cpfInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                const cursor = e.target.selectionStart;
+                const value = e.target.value;
+
+                // Se estiver em uma posição de ponto ou traço
+                if (value[cursor - 1] === '.' || value[cursor - 1] === '-') {
+                    e.preventDefault();
+                    const newValue = value.slice(0, cursor - 2) + value.slice(cursor);
+                    e.target.value = newValue;
+                    e.target.setSelectionRange(cursor - 1, cursor - 1);
+                }
+            }
         });
     });
 </script>
+
 @endsection
