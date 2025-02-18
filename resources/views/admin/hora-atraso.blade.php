@@ -6,7 +6,11 @@
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold text-orange-600">Horas em Atraso</h1>
         <span class="px-4 py-2 bg-orange-100 text-orange-600 rounded-lg text-sm font-medium">
-            Total de Registros: {{ $users->total() }}
+            Total de Registros: {{ $users->sum(function($user) {
+                return $user->pontos->filter(function($ponto) {
+                    return $ponto->atraso && $ponto->atraso !== '00:00:00';
+                })->count();
+            }) }}
         </span>
     </div>
 
