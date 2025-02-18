@@ -9,7 +9,7 @@
             <p class="text-gray-600">Gerencie os usuários da sua empresa</p>
         </div>
         <button id="openCreateModal"
-                class="w-full md:w-auto bg-orange-400 text-white px-6 py-2 rounded-lg hover:bg-orange-400 transition-colors duration-200 flex items-center justify-center md:justify-start gap-2 cursor-pointer">
+                class=" md:w-auto bg-orange-400 text-white px-6 py-2 rounded-lg hover:bg-orange-400 transition-colors duration-200 flex items-center justify-center md:justify-start gap-2 cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
