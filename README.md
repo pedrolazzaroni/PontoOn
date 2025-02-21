@@ -58,7 +58,7 @@ php artisan key:generate
 
 ### 5️⃣ Criar as tabelas e popular o banco  
 ```bash
-php artisan migrate --seed
+php artisan migrate
 ```
 
 ### 6️⃣ Iniciar o servidor local  
