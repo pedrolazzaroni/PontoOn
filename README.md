@@ -76,7 +76,7 @@ Sinta-se à vontade para contribuir! Você pode:
 
 ## 🙌 Agradecimentos  
 
-A ideia inicial do projeto surgiu graças à minha amiga **Julia** (github.com/Juliaal390), que me inspirou a desenvolver essa solução.  
+A ideia inicial do projeto surgiu graças à minha amiga [Julia](https://github.com/Juliaal390), que me inspirou a desenvolver essa solução. 
 
 ## 📄 Licença  
 
@@ -85,4 +85,4 @@ Este projeto é licenciado sob a **MIT License**.
 ---
 
 📢 **Gostou do projeto? Deixe uma ⭐ no repositório!**  
-```
+
