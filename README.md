@@ -24,8 +24,7 @@ O **PontoOn** é um sistema web desenvolvido para facilitar o controle de entrad
 
 - **Laravel** - Framework PHP  
 - **MySQL** - Banco de dados relacional  
-- **Blade** - Template engine  
-- **Bootstrap** - Interface responsiva  
+- **Blade** - Template engine
 - **Chart.js** - Geração de gráficos interativos  
 
 ## 📦 Instalação  
