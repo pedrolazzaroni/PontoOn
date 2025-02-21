@@ -33,7 +33,7 @@ Siga os passos abaixo para rodar o projeto localmente:
 
 ### 1️⃣ Clonar o repositório  
 ```bash
-git clone https://github.com/seuusuario/PontoOn.git
+git clone https://github.com/pedrolazzaroni/PontoOn.git
 cd PontoOn
 ```
 
