@@ -137,7 +137,6 @@
             document.querySelector('.text-orange-400.font-medium').textContent = `${dateString} ${timeString}`;
         }
 
-        // Atualizar a função fetch para incluir o token CSRF e credentials
         function fetchWithAuth(url, options = {}) {
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             return fetch(url, {
@@ -162,7 +161,6 @@
                         const logsCards = document.getElementById('logs-cards');
                         const emptyState = document.getElementById('empty-state');
 
-                        // Limpar conteúdo existente
                         if (tbody) tbody.innerHTML = '';
                         if (logsCards) logsCards.innerHTML = '';
 
@@ -179,7 +177,6 @@
                                                  isLunch ? 'text-red-600 font-medium' :
                                                  'text-gray-500';
 
-                                // Versão Desktop
                                 if (tbody) {
                                     const row = document.createElement('tr');
                                     row.innerHTML = `
@@ -205,7 +202,6 @@
                                     tbody.appendChild(row);
                                 }
 
-                                // Versão Mobile atualizada
                                 if (logsCards) {
                                     const card = document.createElement('div');
                                     card.className = 'bg-white p-4 rounded-lg shadow border border-gray-100';
@@ -233,7 +229,6 @@
                                 }
                             });
 
-                            // Iniciar atualização em tempo real para registros ativos
                             startRealTimeUpdates();
                         } else {
                             if (emptyState) emptyState.classList.remove('hidden');
@@ -261,13 +256,12 @@
             function update() {
                 if (!isUpdating) return;
 
-                // Correção da rota para incluir o userId corretamente
                 fetchWithAuth(`{{ route("ponto.current-time", ":userId") }}`.replace(':userId', userId))
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'almoco' || data.status === 'Almoço') {
                             element.textContent = data.tempo_total;
-                            isUpdating = false; // Para a atualização durante o almoço
+                            isUpdating = false;
                             element.classList.remove('text-green-600', 'font-medium');
                             element.classList.add('text-red-600', 'font-medium');
                             return;
@@ -299,16 +293,13 @@
             }, 1000);
         }
 
-        // Função para formatar o tempo no padrão H:i:s
         function formatarTempo(tempo) {
             if (!tempo) return '00:00:00';
 
-            // Se já estiver no formato correto, retorna o próprio tempo
             if (tempo.match(/^\d{2}:\d{2}:\d{2}$/)) {
                 return tempo;
             }
 
-            // Se for número, converte para o formato correto
             const segundos = parseInt(tempo);
             if (isNaN(segundos)) return '00:00:00';
 
@@ -319,7 +310,6 @@
             return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segs).padStart(2, '0')}`;
         }
 
-        // Atualiza o toast para mostrar mais detalhes do erro
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
@@ -368,7 +358,6 @@
         document.getElementById('confirmBtn').addEventListener('click', function() {
             const formData = new FormData(confirmForm);
 
-            // Converter FormData para objeto JSON
             const jsonData = {};
             formData.forEach((value, key) => {
                 jsonData[key] = value;
@@ -404,21 +393,18 @@
             });
         });
 
-        // Fechar modal clicando fora
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
                 closeModal();
             }
         });
 
-        // Fechar com tecla ESC
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
                 closeModal();
             }
         });
 
-        // Initialize with error handling
         try {
             setInterval(updateDateTime, 1000);
             updateDateTime();
@@ -434,7 +420,6 @@
     </script>
 
     <style>
-        /* Estilização da barra de rolagem */
         .scrollbar-thin::-webkit-scrollbar {
             width: 6px;
         }
