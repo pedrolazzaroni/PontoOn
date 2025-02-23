@@ -58,7 +58,6 @@
         </div>
     </div>
 
-    <!-- Mobile Menu (Sliding Panel) wrapped in hidden by default -->
     <div id="mobileMenuContainer" class="hidden fixed inset-y-0 left-0 w-64 bg-orange-400 shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-50 md:hidden">
         <!-- Menu Header -->
         <div class="p-4 flex justify-between items-center border-b border-orange-300">
@@ -73,31 +72,26 @@
         <nav class="flex-1 px-4 py-6 space-y-2">
             @guest
                 <a href="{{ route('login') }}" class="flex items-center space-x-2 bg-white/10 text-white px-4 py-3 rounded-lg hover:bg-white/20 transition-colors duration-200">
-                    <!-- ...icon... -->
                     <span>Login</span>
                 </a>
             @else
                 <a href="{{ route('profile') }}" class="flex items-center space-x-2 bg-white/10 text-white px-4 py-3 rounded-lg hover:bg-white/20 transition-colors duration-200">
-                    <!-- ...icon... -->
                     <span>Perfil</span>
                 </a>
                 @if(Auth::user()->is_admin)
                     <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2 bg-white/10 text-white px-4 py-3 rounded-lg hover:bg-white/20 transition-colors duration-200">
-                        <!-- ...icon... -->
                         <span>Painel Administrativo</span>
                     </a>
                 @endif
                 <a href="{{ route('logout') }}"
                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                    class="flex items-center space-x-2 bg-white/10 text-white px-4 py-3 rounded-lg hover:bg-white/20 transition-colors duration-200">
-                    <!-- ...icon... -->
                     <span>Sair</span>
                 </a>
             @endguest
         </nav>
     </div>
 
-    <!-- Backdrop Overlay wrapped in hidden by default -->
     <div id="mobileMenuOverlay" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"></div>
 </nav>
 
